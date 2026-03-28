@@ -3,10 +3,7 @@ import { useLocationStore } from '../store/locationStore';
 import { LocationMapModal } from '../components/LocationMapModal';
 
 export function LocationSelectorScreen({ onLocationSelected, onBack }) {
-  const [showAddForm, setShowAddForm] = useState(false);
   const [showMapModal, setShowMapModal] = useState(false);
-  const [address, setAddress] = useState('');
-  const [label, setLabel] = useState('Home');
   const {
     locations,
     selectedLocation,
@@ -20,21 +17,6 @@ export function LocationSelectorScreen({ onLocationSelected, onBack }) {
   useEffect(() => {
     fetchLocations();
   }, [fetchLocations]);
-
-  const handleAddLocation = async () => {
-    if (!address.trim()) {
-      alert('Please enter an address');
-      return;
-    }
-
-    // Default coordinates - in production, use geocoding API
-    const success = await saveLocation(address, 0, 0, label);
-    if (success) {
-      setAddress('');
-      setLabel('Home');
-      setShowAddForm(false);
-    }
-  };
 
   const handleSelectLocation = async (location) => {
     await selectLocation(location.id);
@@ -90,54 +72,9 @@ export function LocationSelectorScreen({ onLocationSelected, onBack }) {
       </div>
 
       <div className="location-buttons-container">
-        {showAddForm ? (
-          <div className="add-location-form">
-            <h3>Add New Location</h3>
-            <div className="form-group">
-              <label>Label (e.g., Home, Office)</label>
-              <input
-                type="text"
-                placeholder="Home"
-                value={label}
-                onChange={(e) => setLabel(e.target.value)}
-                className="form-input"
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Address</label>
-              <textarea
-                placeholder="Enter full delivery address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                className="form-input"
-                rows="3"
-              />
-            </div>
-
-            <div className="form-buttons">
-              <button
-                className="btn btn-primary"
-                onClick={handleAddLocation}
-                disabled={isLoading || !address.trim()}
-              >
-                {isLoading ? 'Saving...' : 'Save Location'}
-              </button>
-              <button className="btn btn-secondary" onClick={() => setShowAddForm(false)}>
-                Cancel
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="add-location-options">
-            <button className="btn btn-primary add-btn" onClick={() => setShowAddForm(true)}>
-              + Add Address Manually
-            </button>
-            <button className="btn btn-secondary map-btn" onClick={() => setShowMapModal(true)}>
-              📍 Pick from Map
-            </button>
-          </div>
-        )}
+        <button className="btn btn-secondary map-btn" onClick={() => setShowMapModal(true)}>
+          📍 Pick from Map
+        </button>
       </div>
 
       <LocationMapModal
