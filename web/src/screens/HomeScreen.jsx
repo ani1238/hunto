@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { useCartStore } from '../store/cartStore';
+import { useLocationStore } from '../store/locationStore';
 
 // Mock restaurants data
 const RESTAURANTS = [
@@ -8,17 +9,37 @@ const RESTAURANTS = [
   { id: 2, name: 'Pawsome Pantry', cuisine: 'Fresh & organic pet food', rating: 4.8, deliveryTime: 25 },
 ];
 
-export function HomeScreen({ onSelectRestaurant }) {
+export function HomeScreen({ onSelectRestaurant, onSelectLocation }) {
   const { user, logout } = useAuthStore();
   const { getItemCount } = useCartStore();
+  const { selectedLocation, fetchLocations } = useLocationStore();
   const cartCount = getItemCount();
+
+  useEffect(() => {
+    fetchLocations();
+  }, []);
 
   return (
     <div className="screen home-screen">
       <div className="user-greeting">
-        <p>Welcome, +91{user?.phone || 'User'} 👋</p>
+        <p>Welcome, {user?.name || 'User'} 👋</p>
         <button className="logout-btn" onClick={logout}>
           Logout
+        </button>
+      </div>
+
+      <div className="location-section">
+        <div className="location-display">
+          <span className="location-icon">📍</span>
+          <div className="location-info">
+            <div className="location-label">Delivery To</div>
+            <div className="location-address">
+              {selectedLocation?.address || 'Select location'}
+            </div>
+          </div>
+        </div>
+        <button className="change-location-btn" onClick={() => onSelectLocation?.()}>
+          Change
         </button>
       </div>
 

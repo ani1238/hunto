@@ -4,12 +4,13 @@ import { useCartStore } from './store/cartStore';
 import { LoginScreen } from './screens/LoginScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { MenuScreen } from './screens/MenuScreen';
+import { LocationSelectorScreen } from './screens/LocationSelectorScreen';
 import './App.css';
 
 function App() {
   const { isAuthenticated } = useAuthStore();
   const { getItemCount } = useCartStore();
-  const [currentView, setCurrentView] = useState('home'); // 'home' or 'menu'
+  const [currentView, setCurrentView] = useState('home'); // 'home', 'menu', 'location'
   const [selectedRestaurantId, setSelectedRestaurantId] = useState(null);
 
   const handleSelectRestaurant = (restaurantId) => {
@@ -20,6 +21,14 @@ function App() {
   const handleBackToHome = () => {
     setCurrentView('home');
     setSelectedRestaurantId(null);
+  };
+
+  const handleSelectLocation = () => {
+    setCurrentView('location');
+  };
+
+  const handleLocationSelected = () => {
+    setCurrentView('home');
   };
 
   const cartCount = getItemCount();
@@ -39,8 +48,10 @@ function App() {
         <LoginScreen />
       ) : currentView === 'menu' ? (
         <MenuScreen restaurantId={selectedRestaurantId} onBack={handleBackToHome} />
+      ) : currentView === 'location' ? (
+        <LocationSelectorScreen onLocationSelected={handleLocationSelected} onBack={handleBackToHome} />
       ) : (
-        <HomeScreen onSelectRestaurant={handleSelectRestaurant} />
+        <HomeScreen onSelectRestaurant={handleSelectRestaurant} onSelectLocation={handleSelectLocation} />
       )}
     </div>
   );
