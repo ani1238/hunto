@@ -241,4 +241,5 @@ export const useCartStore = create((set, get) => ({
   getTotalPrice: () => get().cart.totalPrice || 0,
   getSubtotal: () => get().cart.subtotal || 0,
   getDiscountAmount: () => get().cart.discountAmount || 0,
+  getItemCount: () => get().cart.totalItems || 0,
 }));
