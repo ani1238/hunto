@@ -1,11 +1,11 @@
-# 🐾 Dwiggy — Pet Food Delivery App
+# 🐾 Hunto — Pet Food Delivery App
 
 > Like Swiggy, but for your pets!
 
 ## Project Structure
 
 ```
-dwiggy/
+hunto/
 ├── mobile/          # React Native (Expo) app
 │   ├── src/
 │   │   ├── screens/         # HomeScreen, RestaurantScreen, CartScreen

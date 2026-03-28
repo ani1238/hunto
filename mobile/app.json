@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Dwiggy",
-    "slug": "dwiggy",
+    "name": "Hunto",
+    "slug": "hunto",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/icon.png",
@@ -11,7 +11,7 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.dwiggy.app",
+      "bundleIdentifier": "com.hunto.app",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "This app uses location to show nearby restaurants and delivery options."
       }
@@ -20,7 +20,7 @@
       "adaptiveIcon": {
         "backgroundColor": "#FF6B35"
       },
-      "package": "com.dwiggy.app",
+      "package": "com.hunto.app",
       "permissions": [
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION"

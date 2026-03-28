@@ -37,7 +37,7 @@ func loadConfig() Config {
 
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
-		dsn = "postgres://postgres:postgres@localhost:5432/dwiggy?sslmode=disable"
+		dsn = "postgres://postgres:postgres@localhost:5432/hunto?sslmode=disable"
 	}
 
 	otpDebug := os.Getenv("OTP_DEBUG_MODE") == "true"

@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NativeModules } from "react-native";
 
-const AUTH_TOKEN_KEY = "dwiggy_auth_token";
+const AUTH_TOKEN_KEY = "hunto_auth_token";
 
 const getDevHostBaseUrl = () => {
   const scriptURL = NativeModules.SourceCode?.scriptURL || "";

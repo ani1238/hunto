@@ -1,18 +1,18 @@
-# Dwiggy Go Backend (PostgreSQL)
+# Hunto Go Backend (PostgreSQL)
 
-Production-oriented Go backend for Dwiggy with auth, cart management, and user location persistence.
+Production-oriented Go backend for Hunto with auth, cart management, and user location persistence.
 
 ## Requirements
 
 - Go 1.23+
 - PostgreSQL running
-- DATABASE_URL env var (default: `postgres://postgres:postgres@localhost:5432/dwiggy?sslmode=disable`)
+- DATABASE_URL env var (default: `postgres://postgres:postgres@localhost:5432/hunto?sslmode=disable`)
 - Optional: `OTP_DEBUG_MODE=true` to include `debugOtp` in OTP response (dev only)
 - Optional: `ADMIN_API_KEY=admin123` for admin endpoints
 - Optional: `PARTNER_KEYS=1:partner-1,2:partner-2` for restaurant partner access
 - Optional: `CORS_ALLOWED_ORIGINS=http://localhost:5174,http://127.0.0.1:5174`
 - Optional image uploads (S3-compatible: Cloudflare R2, MinIO, S3):
-  - `STORAGE_BUCKET=dwiggy-images`
+  - `STORAGE_BUCKET=hunto-images`
   - `STORAGE_REGION=auto`
   - `STORAGE_ENDPOINT=https://<account>.r2.cloudflarestorage.com` (or MinIO/S3 endpoint)
   - `STORAGE_ACCESS_KEY_ID=<key>`
@@ -28,7 +28,7 @@ Production-oriented Go backend for Dwiggy with auth, cart management, and user l
 2. Create DB:
 
 ```bash
-createdb dwiggy
+createdb hunto
 ```
 
 3. Run server:
@@ -53,7 +53,7 @@ This starts:
 - MinIO S3 API on `http://localhost:9000`
 - MinIO console on `http://localhost:9001` (user/pass: `minioadmin` / `minioadmin`)
 
-The compose file auto-creates bucket `dwiggy-images` with public-read + CORS for partner web upload.
+The compose file auto-creates bucket `hunto-images` with public-read + CORS for partner web upload.
 `HOST_LAN_IP` controls the generated public image URL host (`STORAGE_PUBLIC_BASE_URL`), so mobile devices can load uploaded images.
 
 ## API
