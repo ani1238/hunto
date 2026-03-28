@@ -1,6 +1,18 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+// Detect if running on phone (via IP) or localhost
+const getAPIBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    // If accessed via IP, use that IP for API too
+    if (hostname === '192.168.1.24' || hostname.match(/^\d+\.\d+\.\d+\.\d+$/)) {
+      return `http://${hostname}:3000`;
+    }
+  }
+  return import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+};
+
+const API_BASE_URL = getAPIBaseUrl();
 
 let authToken = localStorage.getItem('auth_token');
 

@@ -28,7 +28,7 @@ services:
       PORT: '3000'
       ADMIN_API_KEY: 'admin123'
       PARTNER_KEYS: 1:partner-1,2:partner-2,3:partner-3,4:partner-4
-      CORS_ALLOWED_ORIGINS: http://localhost:5174,http://127.0.0.1:5174,http://localhost:5173,http://127.0.0.1:5173
+      CORS_ALLOWED_ORIGINS: http://localhost:5174,http://127.0.0.1:5174,http://localhost:5173,http://127.0.0.1:5173,http://192.168.1.24:5173,http://192.168.1.24:5174
       # Local MinIO (enabled by default for partner dish image uploads)
       STORAGE_BUCKET: 'hunto-images'
       STORAGE_REGION: 'us-east-1'
