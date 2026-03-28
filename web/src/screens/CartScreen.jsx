@@ -1,22 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCartStore } from '../store/cartStore';
 import { useLocationStore } from '../store/locationStore';
-import { useOrderStore } from '../store/orderStore';
 
 export function CartScreen({ onBack, onCheckout }) {
-  const { items, getTotalPrice, updateQuantity, removeItem, clearCart } = useCartStore();
+  const { cart, getTotalPrice, updateQuantity, removeItem, clearCart } = useCartStore();
   const { selectedLocation } = useLocationStore();
-  const { createOrder } = useOrderStore();
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleUpdateQuantity = (itemId, quantity) => {
-    if (quantity <= 0) {
-      removeItem(itemId);
-    } else {
-      updateQuantity(itemId, quantity);
-    }
-  };
+  useEffect(() => {
+    // Load cart when component mounts
+    const loadCart = async () => {
+      await useCartStore.getState().loadCart();
+    };
+    loadCart();
+  }, []);
 
   const handlePlaceOrder = async () => {
     if (!selectedLocation) {
@@ -24,7 +22,7 @@ export function CartScreen({ onBack, onCheckout }) {
       return;
     }
 
-    if (items.length === 0) {
+    if (cart.items.length === 0) {
       setError('Your cart is empty');
       return;
     }
@@ -33,15 +31,10 @@ export function CartScreen({ onBack, onCheckout }) {
     setError('');
 
     try {
-      // Get location ID - use addressLine as unique identifier if no ID available
-      const locationId = selectedLocation.id || selectedLocation.addressLine;
-      
-      // Create order via API
-      const result = await createOrder(locationId, items);
+      const locationId = selectedLocation.id;
+      const result = await useCartStore.getState().placeOrder(locationId);
       
       if (result.success && result.order?.id) {
-        // Clear cart and navigate to tracking
-        clearCart();
         onCheckout?.(result.order.id);
       } else {
         setError(result.error || 'Failed to place order');
@@ -53,93 +46,102 @@ export function CartScreen({ onBack, onCheckout }) {
     }
   };
 
-  const totalPrice = getTotalPrice();
+  const items = cart.items || [];
+  const totalPrice = getTotalPrice ? getTotalPrice() : cart.totalPrice || 0;
 
-  return (
-    <div className="screen cart-screen">
-      <div className="cart-header">
-        <button className="back-btn" onClick={onBack}>
-          ← Back
-        </button>
-        <h2>Your Cart</h2>
-      </div>
-
-      {error && <p className="error-text error-message">{error}</p>}
-
-      {items.length === 0 ? (
+  if (items.length === 0) {
+    return (
+      <div className="screen cart-screen">
+        <div className="cart-header">
+          <button className="back-btn" onClick={onBack}>← Back</button>
+          <h2>Your Cart</h2>
+        </div>
         <div className="empty-cart">
           <div className="empty-icon">🛒</div>
           <p>Your cart is empty</p>
           <p className="empty-hint">Add items from restaurants to get started</p>
         </div>
-      ) : (
-        <>
-          <div className="cart-items">
-            {items.map((item) => (
-              <div key={item.id} className="cart-item">
-                <div className="item-info">
-                  <h4>{item.name}</h4>
-                  <p className="item-price">₹{item.price}</p>
-                </div>
-                <div className="item-controls">
-                  <button
-                    className="qty-btn"
-                    onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
-                  >
-                    −
-                  </button>
-                  <span className="qty">{item.quantity}</span>
-                  <button
-                    className="qty-btn"
-                    onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                  >
-                    +
-                  </button>
-                  <button
-                    className="remove-btn"
-                    onClick={() => removeItem(item.id)}
-                    title="Remove"
-                  >
-                    🗑️
-                  </button>
-                </div>
-                <div className="item-total">₹{(item.price * item.quantity).toFixed(2)}</div>
-              </div>
-            ))}
-          </div>
+      </div>
+    );
+  }
 
-          <div className="location-summary">
-            <span className="location-icon">📍</span>
-            <div className="location-text">
-              <div className="label">Delivery To</div>
-              <div className="address">{selectedLocation?.address || 'Select location'}</div>
-            </div>
-          </div>
+  return (
+    <div className="screen cart-screen">
+      <div className="cart-header">
+        <button className="back-btn" onClick={onBack}>← Back</button>
+        <h2>Your Cart</h2>
+      </div>
 
-          <div className="price-breakdown">
-            <div className="price-row">
-              <span>Subtotal</span>
-              <span>₹{totalPrice.toFixed(2)}</span>
+      {error && <p className="error-text error-message">{error}</p>}
+
+      <div style={{ padding: '16px', textAlign: 'right' }}>
+        <button 
+          onClick={async () => {
+            if (confirm('Clear all items from cart?')) {
+              await clearCart();
+            }
+          }}
+          style={{
+            padding: '8px 16px',
+            backgroundColor: '#f5f5f5',
+            border: '1px solid #ddd',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            color: '#666',
+            fontSize: '14px',
+          }}
+        >
+          🗑️ Clear Cart
+        </button>
+      </div>
+
+      <div className="cart-items">
+        {items.map((item) => (
+          <div key={item.id} className="cart-item">
+            <div className="item-info">
+              <h4>{item.menuItemName}</h4>
+              <p className="item-price">₹{item.unitPrice}</p>
             </div>
-            <div className="price-row">
-              <span>Delivery</span>
-              <span>₹0 (Free)</span>
-            </div>
-            <div className="price-row total">
-              <span>Total</span>
-              <span>₹{totalPrice.toFixed(2)}</span>
+            <div className="item-controls">
+              <button onClick={() => removeItem(item.menuItemId)} className="qty-btn">−</button>
+              <span className="qty">{item.quantity}</span>
+              <button onClick={() => updateQuantity(item.menuItemId, item.quantity + 1)} className="qty-btn">+</button>
+              <span className="item-total">₹{(item.unitPrice * item.quantity).toFixed(2)}</span>
             </div>
           </div>
+        ))}
+      </div>
 
-          <button
-            className="btn btn-primary place-order-btn"
-            onClick={handlePlaceOrder}
-            disabled={isLoading}
-          >
-            {isLoading ? 'Placing Order...' : `Place Order (₹${totalPrice.toFixed(2)})`}
-          </button>
-        </>
-      )}
+      <div className="price-breakdown">
+        <div className="price-row">
+          <span>Subtotal</span>
+          <span>₹{(cart.subtotal || 0).toFixed(2)}</span>
+        </div>
+        {cart.discountAmount > 0 && (
+          <div className="price-row discount">
+            <span>Discount</span>
+            <span>−₹{(cart.discountAmount || 0).toFixed(2)}</span>
+          </div>
+        )}
+        <div className="price-row">
+          <span>Delivery</span>
+          <span>₹{cart.totalPrice && cart.subtotal ? ((cart.totalPrice - cart.subtotal + (cart.discountAmount || 0)) * 0.24).toFixed(2) || 20 : 20}</span>
+        </div>
+        <div className="price-row total">
+          <span>Total</span>
+          <span>₹{totalPrice.toFixed(2)}</span>
+        </div>
+      </div>
+
+      <div className="cart-actions">
+        <button 
+          onClick={handlePlaceOrder}
+          disabled={isLoading}
+          className="btn btn-primary place-order-btn"
+        >
+          {isLoading ? 'Processing...' : 'Place Order'}
+        </button>
+      </div>
     </div>
   );
 }

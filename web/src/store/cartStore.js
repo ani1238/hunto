@@ -1,95 +1,79 @@
 import { create } from 'zustand';
 import { apiRequest } from '../api/authApi';
 
-const normalizeCartItems = (items = []) => {
-  return items.map((item) => ({
-    id: Number(item.menuItemId || item.id),
-    menuItemId: Number(item.menuItemId || item.id),
-    name: item.menuItemName,
-    price: item.unitPrice,
-    quantity: item.quantity,
-    restaurantId: Number(item.restaurantId),
-    restaurantName: item.restaurantName,
-    lineTotal: item.lineTotal,
-  }));
-};
+export const CART_RESTAURANT_CONFLICT = 'CART_RESTAURANT_CONFLICT';
+
+const normalizeCart = (cart = {}) => ({
+  id: cart.id || null,
+  userId: cart.userId || null,
+  restaurantId: cart.restaurantId || null,
+  restaurantName: cart.restaurantName || '',
+  items: cart.items || [],
+  subtotal: cart.subtotal || 0,
+  discountAmount: cart.discountAmount || 0,
+  appliedDiscount: cart.appliedDiscount || null,
+  totalItems: cart.totalItems || 0,
+  totalPrice: cart.totalPrice || 0,
+});
 
 export const useCartStore = create((set, get) => ({
-  items: [],
-  restaurantId: null,
+  cart: normalizeCart(),
+  availableDiscounts: [],
   isLoading: false,
   errorMessage: '',
 
-  addItem: async (item) => {
+  loadCart: async () => {
     set({ isLoading: true, errorMessage: '' });
     try {
-      console.log('[CartStore] Adding item:', item.id);
-      const response = await apiRequest('/api/cart/items', {
-        method: 'POST',
-        data: {
-          menuItemId: Number(item.id),
-          quantity: get().getItemQuantity(item.id) + 1,
-        },
-      });
-
-      console.log('[CartStore] API Response:', response);
-      const backendCart = response.data || response;
-      console.log('[CartStore] Backend cart items:', backendCart.items);
-      
-      const normalized = normalizeCartItems(backendCart.items || []);
-      console.log('[CartStore] Normalized items:', normalized);
-      
+      const response = await apiRequest('/api/cart');
+      const cartData = response.data || response;
       set({
-        items: normalized,
-        restaurantId: backendCart.restaurantId,
+        cart: normalizeCart(cartData),
         isLoading: false,
       });
-      console.log('[CartStore] State updated, new items:', get().items);
+      return true;
     } catch (error) {
-      console.error('[CartStore] Add item error:', error);
       set({
         isLoading: false,
-        errorMessage: error.message || 'Failed to add item',
+        errorMessage: error.message || 'Unable to load cart',
       });
+      return false;
     }
   },
 
-  removeItem: async (itemId) => {
-    const currentQuantity = get().getItemQuantity(itemId);
+  addItem: async (menuItem) => {
+    const cart = get().cart || {};
+    const cartItems = cart.items || [];
+    const targetRestaurantId = String(menuItem?.restaurantId ?? '');
+
+    if (targetRestaurantId && cartItems.length > 0) {
+      const existingRestaurantIds = new Set(
+        cartItems
+          .map((item) => String(item.restaurantId ?? ''))
+          .filter(Boolean)
+      );
+      if (existingRestaurantIds.size > 0 && !existingRestaurantIds.has(targetRestaurantId)) {
+        const conflictMessage = 'Cart can only contain items from one restaurant';
+        set({ errorMessage: conflictMessage });
+        return { error: conflictMessage, code: CART_RESTAURANT_CONFLICT };
+      }
+    }
+
+    const currentQuantity = get().getItemQuantity(menuItem.id);
+    return get().setItemQuantity(menuItem.id, currentQuantity + 1);
+  },
+
+  removeItem: async (menuItemId) => {
+    const currentQuantity = get().getItemQuantity(menuItemId);
     if (currentQuantity <= 1) {
-      return get().removeItemCompletely(itemId);
+      return get().removeItemCompletely(menuItemId);
     }
-    return get().updateQuantity(itemId, currentQuantity - 1);
+    return get().setItemQuantity(menuItemId, currentQuantity - 1);
   },
 
-  removeItemCompletely: async (itemId) => {
-    set({ isLoading: true, errorMessage: '' });
-    try {
-      const response = await apiRequest('/api/cart/items', {
-        method: 'POST',
-        data: {
-          menuItemId: Number(itemId),
-          quantity: 0,
-        },
-      });
-
-      const backendCart = response.data || response;
-      set({
-        items: normalizeCartItems(backendCart.items || []),
-        restaurantId: backendCart.restaurantId,
-        isLoading: false,
-      });
-    } catch (error) {
-      set({
-        isLoading: false,
-        errorMessage: error.message || 'Failed to remove item',
-      });
-    }
-  },
-
-  updateQuantity: async (itemId, quantity) => {
+  setItemQuantity: async (menuItemId, quantity) => {
     if (quantity <= 0) {
-      return get().removeItemCompletely(itemId);
+      return get().removeItemCompletely(menuItemId);
     }
 
     set({ isLoading: true, errorMessage: '' });
@@ -97,65 +81,164 @@ export const useCartStore = create((set, get) => ({
       const response = await apiRequest('/api/cart/items', {
         method: 'POST',
         data: {
-          menuItemId: Number(itemId),
+          menuItemId: Number(menuItemId),
           quantity,
         },
       });
-
-      const backendCart = response.data || response;
+      const cartData = response.data || response;
       set({
-        items: normalizeCartItems(backendCart.items || []),
-        restaurantId: backendCart.restaurantId,
+        cart: normalizeCart(cartData),
         isLoading: false,
       });
+      return { error: null };
     } catch (error) {
       set({
         isLoading: false,
-        errorMessage: error.message || 'Failed to update quantity',
+        errorMessage: error.message || 'Unable to update cart',
       });
+      return { error: error.message || 'Unable to update cart' };
     }
   },
 
-  getTotal: () => {
-    return get().items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  },
+  removeItemCompletely: async (menuItemId) => {
+    const item = get().cart.items.find((i) => String(i.menuItemId) === String(menuItemId));
+    if (!item) {
+      return { error: null };
+    }
 
-  getTotalPrice: () => {
-    return get().items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  },
-
-  getItemCount: () => {
-    return get().items.reduce((sum, item) => sum + item.quantity, 0);
-  },
-
-  getItemQuantity: (itemId) => {
-    const allItems = get().items;
-    console.log(`[CartStore] getItemQuantity(${itemId}) - searching in items:`, allItems.map(i => ({ id: i.id, menuItemId: i.menuItemId })));
-    const item = allItems.find((i) => i.id === itemId);
-    console.log(`[CartStore] Found item:`, item, 'Quantity:', item?.quantity || 0);
-    return item?.quantity || 0;
-  },
-
-  clear: async () => {
     set({ isLoading: true, errorMessage: '' });
     try {
-      await apiRequest('/api/cart/clear', {
-        method: 'POST',
+      const response = await apiRequest(`/api/cart/items/${item.id}`, {
+        method: 'DELETE',
       });
-      set({ items: [], restaurantId: null, isLoading: false });
+      const cartData = response.data || response;
+      set({
+        cart: normalizeCart(cartData),
+        isLoading: false,
+      });
+      return { error: null };
     } catch (error) {
       set({
         isLoading: false,
-        errorMessage: error.message || 'Failed to clear cart',
+        errorMessage: error.message || 'Unable to remove item',
       });
+      return { error: error.message || 'Unable to remove item' };
     }
   },
 
   clearCart: async () => {
-    return get().clear();
+    set({ isLoading: true, errorMessage: '' });
+    try {
+      const response = await apiRequest('/api/cart', { method: 'DELETE' });
+      const cartData = response.data || response;
+      set({
+        cart: normalizeCart(cartData),
+        isLoading: false,
+      });
+      return true;
+    } catch (error) {
+      set({
+        isLoading: false,
+        errorMessage: error.message || 'Unable to clear cart',
+      });
+      return false;
+    }
   },
 
-  setRestaurant: (restaurantId) => {
-    set({ restaurantId });
+  placeOrder: async (deliveryLocationId) => {
+    set({ isLoading: true, errorMessage: '' });
+    try {
+      const response = await apiRequest('/api/orders', {
+        method: 'POST',
+        data: {
+          deliveryLocationId: Number(deliveryLocationId),
+        },
+      });
+      const orderData = response.data || response;
+      set({
+        cart: normalizeCart(),
+        isLoading: false,
+      });
+      return { success: true, order: orderData };
+    } catch (error) {
+      set({
+        isLoading: false,
+        errorMessage: error.message || 'Unable to place order',
+      });
+      return { success: false, error: error.message || 'Unable to place order' };
+    }
   },
+
+  loadDiscounts: async () => {
+    set({ isLoading: true, errorMessage: '' });
+    try {
+      const response = await apiRequest('/api/cart/discounts');
+      set({
+        availableDiscounts: response.data || [],
+        isLoading: false,
+      });
+      return true;
+    } catch (error) {
+      set({
+        isLoading: false,
+        errorMessage: error.message || 'Unable to load discounts',
+      });
+      return false;
+    }
+  },
+
+  applyDiscount: async (code) => {
+    set({ isLoading: true, errorMessage: '' });
+    try {
+      const response = await apiRequest('/api/cart/discounts/apply', {
+        method: 'POST',
+        data: { code },
+      });
+      const cartData = response.data || response;
+      set({
+        cart: normalizeCart(cartData),
+        isLoading: false,
+      });
+      await get().loadDiscounts();
+      return true;
+    } catch (error) {
+      set({
+        isLoading: false,
+        errorMessage: error.message || 'Unable to apply discount',
+      });
+      return false;
+    }
+  },
+
+  removeDiscount: async () => {
+    set({ isLoading: true, errorMessage: '' });
+    try {
+      const response = await apiRequest('/api/cart/discounts', {
+        method: 'DELETE',
+      });
+      const cartData = response.data || response;
+      set({
+        cart: normalizeCart(cartData),
+        isLoading: false,
+      });
+      await get().loadDiscounts();
+      return true;
+    } catch (error) {
+      set({
+        isLoading: false,
+        errorMessage: error.message || 'Unable to remove discount',
+      });
+      return false;
+    }
+  },
+
+  getItemQuantity: (menuItemId) => {
+    const item = get().cart.items.find((i) => String(i.menuItemId) === String(menuItemId));
+    return item ? item.quantity : 0;
+  },
+
+  getTotalItems: () => get().cart.totalItems || 0,
+  getTotalPrice: () => get().cart.totalPrice || 0,
+  getSubtotal: () => get().cart.subtotal || 0,
+  getDiscountAmount: () => get().cart.discountAmount || 0,
 }));
