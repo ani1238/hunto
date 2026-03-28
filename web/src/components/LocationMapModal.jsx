@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
 import { useLocationStore } from '../store/locationStore';
 
@@ -19,10 +19,41 @@ export function LocationMapModal({ isOpen, onClose, onSelectLocation }) {
   const [addressLine1, setAddressLine1] = useState('');
   const [mapCenter, setMapCenter] = useState(defaultCenter);
   const [isLoadingAddress, setIsLoadingAddress] = useState(false);
+  const searchInputRef = useRef(null);
+  const autocompleteRef = useRef(null);
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+    libraries: ['places'],
   });
+
+  useEffect(() => {
+    if (isLoaded && searchInputRef.current && !autocompleteRef.current) {
+      autocompleteRef.current = new window.google.maps.places.Autocomplete(
+        searchInputRef.current,
+        {
+          componentRestrictions: { country: 'in' },
+          types: ['geocode'],
+        }
+      );
+
+      autocompleteRef.current.addListener('place_changed', handlePlaceSelect);
+    }
+  }, [isLoaded]);
+
+  const handlePlaceSelect = () => {
+    const place = autocompleteRef.current.getPlace();
+    if (place.geometry) {
+      const lat = place.geometry.location.lat();
+      const lng = place.geometry.location.lng();
+      const newPosition = { lat, lng };
+      
+      setMarkerPosition(newPosition);
+      setMapCenter(newPosition);
+      setLocationLabel(place.formatted_address || '');
+      setAddressLine1(''); // Don't auto-fill, let user enter
+    }
+  };
 
   useEffect(() => {
     if (selectedLocation && isOpen) {
@@ -47,14 +78,11 @@ export function LocationMapModal({ isOpen, onClose, onSelectLocation }) {
       const address = data.address?.name ||
         data.address?.road ||
         data.name ||
-        `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+        '';
       setLocationLabel(address);
-      // Auto-populate addressLine1 with the reverse geocoded address
-      setAddressLine1(address);
+      // Don't auto-populate addressLine1 - let user enter it manually
     } catch (err) {
-      const fallback = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-      setLocationLabel(fallback);
-      setAddressLine1(fallback);
+      console.error('Reverse geocode failed:', err);
     } finally {
       setIsLoadingAddress(false);
     }
@@ -79,12 +107,16 @@ export function LocationMapModal({ isOpen, onClose, onSelectLocation }) {
   };
 
   const handleConfirmLocation = () => {
+    if (!addressLine1.trim()) {
+      alert('Please enter Address Line 1');
+      return;
+    }
     if (markerPosition) {
       onSelectLocation({
         latitude: markerPosition.lat,
         longitude: markerPosition.lng,
         address: locationLabel || `${markerPosition.lat.toFixed(4)}, ${markerPosition.lng.toFixed(4)}`,
-        addressLine: addressLine1 || (locationLabel || `${markerPosition.lat.toFixed(4)}, ${markerPosition.lng.toFixed(4)}`),
+        addressLine: addressLine1,
         label: locationLabel || 'Map Location',
         isCurrent: false,
       });
@@ -132,6 +164,22 @@ export function LocationMapModal({ isOpen, onClose, onSelectLocation }) {
         <div className="modal-header">
           <h2>Select delivery location</h2>
           <button className="close-btn" onClick={onClose}>✕</button>
+        </div>
+
+        <div style={{ padding: '12px 16px', borderBottom: '1px solid #eee' }}>
+          <input
+            ref={searchInputRef}
+            type="text"
+            placeholder="Search location..."
+            className="location-input"
+            style={{
+              width: '100%',
+              padding: '10px 12px',
+              fontSize: '14px',
+              border: '1px solid #ddd',
+              borderRadius: '4px',
+            }}
+          />
         </div>
 
         <div className="map-wrapper">
@@ -196,7 +244,8 @@ export function LocationMapModal({ isOpen, onClose, onSelectLocation }) {
           <button
             className="btn btn-primary"
             onClick={handleConfirmLocation}
-            disabled={!markerPosition}
+            disabled={!markerPosition || !addressLine1.trim()}
+            style={{ opacity: (!markerPosition || !addressLine1.trim()) ? 0.5 : 1 }}
           >
             Confirm Location
           </button>
