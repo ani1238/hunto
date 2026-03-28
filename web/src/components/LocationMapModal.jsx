@@ -137,15 +137,24 @@ export function LocationMapModal({ isOpen, onClose, onSelectLocation }) {
               fullscreenControl: true,
               zoomControl: true,
               streetViewControl: false,
+              mapTypeControl: true,
             }}
           >
-            <Marker
-              position={markerPosition}
-              draggable={true}
-              onDragEnd={handleMarkerDragEnd}
-              title="Your delivery location"
-            />
+            {markerPosition && (
+              <Marker
+                position={markerPosition}
+                draggable={true}
+                onDragEnd={handleMarkerDragEnd}
+                title="Your delivery location"
+                animation={window.google?.maps?.Animation?.DROP}
+              />
+            )}
           </GoogleMap>
+          
+          {/* Center pin indicator */}
+          <div className="map-center-pin">
+            <div className="pin-icon">📍</div>
+          </div>
         </div>
 
         <div className="location-input-section">
