@@ -44,7 +44,6 @@ html, body {
   font-size: 20px;
   font-weight: 700;
   color: #FF6B35;
-  text-decoration: none;
 }
 
 .cart-btn {
@@ -63,22 +62,95 @@ html, body {
   padding-bottom: 80px;
 }
 
-.home-screen h1 {
-  font-size: 28px;
-  font-weight: 700;
-  color: #FF6B35;
-  margin-bottom: 4px;
+/* Login Screen */
+.login-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%);
 }
 
-.home-screen p {
+.login-container {
+  background: white;
+  border-radius: 16px;
+  padding: 32px 24px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+.login-container h1 {
+  font-size: 32px;
+  text-align: center;
+  color: #FF6B35;
+  margin-bottom: 8px;
+}
+
+.login-container p {
   font-size: 14px;
+  text-align: center;
   color: #666;
-  margin-bottom: 20px;
+  margin-bottom: 32px;
+}
+
+/* Form Group */
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.phone-input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.phone-prefix {
+  padding: 12px 12px;
+  background-color: #f5f5f5;
+  border-right: 1px solid #e0e0e0;
+  font-weight: 600;
+  color: #666;
+}
+
+.phone-input-wrapper input,
+.otp-input {
+  flex: 1;
+  border: none;
+  padding: 12px;
+  font-size: 16px;
+  outline: none;
+}
+
+.otp-input {
+  text-align: center;
+  letter-spacing: 8px;
+  font-size: 20px;
+  font-weight: 600;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.help-text,
+.otp-hint {
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 16px;
 }
 
 /* Buttons */
 .btn {
-  width: 100%;
   padding: 14px 16px;
   border: none;
   border-radius: 8px;
@@ -86,17 +158,70 @@ html, body {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .btn-primary {
   background-color: #FF6B35;
   color: white;
+  width: 100%;
 }
 
-.btn-primary:active {
+.btn-primary:active:not(:disabled) {
   background-color: #E55A24;
   transform: scale(0.98);
+}
+
+.btn-secondary {
+  background-color: #f5f5f5;
+  color: #333;
+  border: 1px solid #e0e0e0;
+  width: 100%;
+}
+
+.btn-secondary:active:not(:disabled) {
+  background-color: #efefef;
+}
+
+/* Home Screen */
+.home-screen {
+  padding: 0;
+}
+
+.user-greeting {
+  padding: 16px;
+  background: linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-greeting p {
+  font-size: 14px;
+  margin: 0;
+}
+
+.logout-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.home-screen h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 20px 16px 12px;
+  color: #333;
 }
 
 /* Cards */
@@ -104,7 +229,7 @@ html, body {
   background: white;
   border-radius: 8px;
   padding: 16px;
-  margin-bottom: 12px;
+  margin: 0 16px 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
@@ -118,10 +243,16 @@ html, body {
 .card p {
   font-size: 13px;
   color: #666;
-  margin-bottom: 12px;
+  margin: 4px 0;
 }
 
-.card button {
+.card .rating {
+  font-size: 12px;
+  color: #FF6B35;
+  font-weight: 500;
+}
+
+.view-btn {
   width: 100%;
   padding: 10px;
   background-color: #f5f5f5;
@@ -129,19 +260,17 @@ html, body {
   border-radius: 6px;
   font-size: 14px;
   cursor: pointer;
+  margin-top: 12px;
   transition: all 0.2s;
 }
 
-.card button:active {
+.view-btn:active {
   background-color: #efefef;
 }
 
 /* Restaurant List */
-.restaurant-list h2 {
-  font-size: 18px;
-  font-weight: 600;
-  margin: 20px 0 12px;
-  color: #333;
+.restaurant-list {
+  padding-bottom: 20px;
 }
 
 /* Responsive */
@@ -152,13 +281,14 @@ html, body {
     padding: 24px;
   }
 
-  .home-screen h1 {
-    font-size: 32px;
+  .login-container {
+    max-width: 450px;
   }
 
-  .btn {
-    width: auto;
-    min-width: 200px;
+  .card {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 500px;
   }
 }
 
