@@ -116,4 +116,58 @@ export const useLocationStore = create((set, get) => ({
       return false;
     }
   },
+
+  // Auto-detect user's current location using browser Geolocation API
+  detectCurrentLocation: async () => {
+    return new Promise((resolve) => {
+      if (!navigator.geolocation) {
+        resolve(null);
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          
+          // Try to reverse geocode using Nominatim (OpenStreetMap's service, free)
+          try {
+            const response = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+            );
+            const data = await response.json();
+            const address = data.address?.name || 
+                           data.address?.road || 
+                           data.name || 
+                           `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+
+            resolve({
+              latitude,
+              longitude,
+              address,
+              label: 'Current Location',
+              isCurrent: true,
+            });
+          } catch (err) {
+            // If reverse geocoding fails, just return coordinates
+            resolve({
+              latitude,
+              longitude,
+              address: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
+              label: 'Current Location',
+              isCurrent: true,
+            });
+          }
+        },
+        (error) => {
+          // Silently fail if user denies permission
+          resolve(null);
+        },
+        {
+          enableHighAccuracy: false,
+          timeout: 5000,
+          maximumAge: 0,
+        }
+      );
+    });
+  },
 }));

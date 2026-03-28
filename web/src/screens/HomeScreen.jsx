@@ -7,13 +7,51 @@ import { useRestaurantStore } from '../store/restaurantStore';
 export function HomeScreen({ onSelectRestaurant, onSelectLocation }) {
   const { user, logout } = useAuthStore();
   const { getItemCount } = useCartStore();
-  const { selectedLocation, fetchLocations } = useLocationStore();
+  const { selectedLocation, fetchLocations, detectCurrentLocation, saveLocation, setSelectedLocation } = useLocationStore();
   const { restaurants, isLoading, errorMessage, fetchRestaurants } = useRestaurantStore();
   const cartCount = getItemCount();
 
   useEffect(() => {
-    fetchLocations();
-    fetchRestaurants('');
+    const initializeApp = async () => {
+      // Fetch saved locations first
+      await fetchLocations();
+      
+      // Try to auto-detect current location
+      const currentLocation = await detectCurrentLocation();
+      if (currentLocation) {
+        // Check if this location is already saved
+        const isSaved = await new Promise((resolve) => {
+          const checkLocations = async () => {
+            const locs = await fetchLocations();
+            const found = locs.some(
+              (loc) =>
+                Math.abs(loc.latitude - currentLocation.latitude) < 0.01 &&
+                Math.abs(loc.longitude - currentLocation.longitude) < 0.01
+            );
+            resolve(found);
+          };
+          checkLocations();
+        });
+
+        // If not saved, save it as current location
+        if (!isSaved) {
+          await saveLocation(
+            currentLocation.address,
+            currentLocation.latitude,
+            currentLocation.longitude,
+            currentLocation.label
+          );
+        } else {
+          // Set it as selected if it exists
+          setSelectedLocation(currentLocation);
+        }
+      }
+
+      // Fetch restaurants
+      fetchRestaurants('');
+    };
+
+    initializeApp();
   }, []);
 
   return (
