@@ -1,40 +1,41 @@
-import { View, Text, StyleSheet } from 'react-native';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import './App.css';
 
-export default function App() {
+function Home() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Hunto</Text>
-      <Text style={styles.subtitle}>Pet Food Delivery</Text>
-      <Text style={styles.info}>
-        This is your web-optimized app. Login to get started!
-      </Text>
-    </View>
+    <div className="screen home-screen">
+      <h1>🐾 Welcome to Hunto</h1>
+      <p>Pet Food Delivery</p>
+      <button className="btn btn-primary">Login with Google</button>
+      
+      <div className="restaurant-list">
+        <h2>Popular Restaurants</h2>
+        <div className="card">
+          <h3>Pet Provisions</h3>
+          <p>Premium pet food & treats</p>
+          <button>View Menu →</button>
+        </div>
+      </div>
+    </div>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    padding: 20,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#FF6B35',
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 18,
-    color: '#666',
-    marginBottom: 20,
-  },
-  info: {
-    fontSize: 14,
-    color: '#999',
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-});
+function App() {
+  return (
+    <Router>
+      <div className="app">
+        <nav className="navbar">
+          <Link to="/" className="logo">🐾 Hunto</Link>
+          <button className="cart-btn">🛒 Cart (0)</button>
+        </nav>
+        
+        <Routes>
+          <Route path="/" element={<Home />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+}
+
+export default App;
