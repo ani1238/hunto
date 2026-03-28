@@ -1,0 +1,48 @@
+import { create } from 'zustand';
+import { apiRequest } from '../api/authApi';
+
+export const useRestaurantStore = create((set, get) => ({
+  restaurants: [],
+  isLoading: false,
+  errorMessage: '',
+
+  fetchRestaurants: async (search = '') => {
+    set({ isLoading: true, errorMessage: '' });
+    try {
+      const qs = search ? `?search=${encodeURIComponent(search)}` : '';
+      const response = await apiRequest(`/api/restaurants${qs}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const restaurantsList = Array.isArray(response) ? response : response.data || [];
+      set({
+        restaurants: restaurantsList,
+        isLoading: false,
+        errorMessage: '',
+      });
+      return true;
+    } catch (error) {
+      set({
+        isLoading: false,
+        errorMessage: error.message || 'Failed to load restaurants',
+      });
+      return false;
+    }
+  },
+
+  getRestaurantById: async (restaurantId) => {
+    try {
+      const response = await apiRequest(`/api/restaurants/${restaurantId}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      return response.data || response;
+    } catch (error) {
+      set({ errorMessage: error.message || 'Failed to load restaurant' });
+      return null;
+    }
+  },
+
+  clearRestaurants: () => set({ restaurants: [], errorMessage: '' }),
+}));

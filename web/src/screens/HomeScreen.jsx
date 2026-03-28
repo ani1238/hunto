@@ -2,13 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { useCartStore } from '../store/cartStore';
 import { useLocationStore } from '../store/locationStore';
-
-// Mock restaurants data
-const RESTAURANTS = [
-  { id: 1, name: 'Pet Provisions', cuisine: 'Premium pet food & treats', rating: 4.5, deliveryTime: 30, category: 'premium' },
-  { id: 2, name: 'Pawsome Pantry', cuisine: 'Fresh & organic pet food', rating: 4.8, deliveryTime: 25, category: 'organic' },
-  { id: 3, name: 'Budget Bites', cuisine: 'Affordable pet food', rating: 4.2, deliveryTime: 35, category: 'budget' },
-];
+import { useRestaurantStore } from '../store/restaurantStore';
 
 const CATEGORIES = [
   { id: 'all', label: 'All', icon: '🍽️' },
@@ -21,27 +15,43 @@ export function HomeScreen({ onSelectRestaurant, onSelectLocation }) {
   const { user, logout } = useAuthStore();
   const { getItemCount } = useCartStore();
   const { selectedLocation, fetchLocations } = useLocationStore();
+  const { restaurants, isLoading, errorMessage, fetchRestaurants } = useRestaurantStore();
   const cartCount = getItemCount();
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('rating');
   const [showFilters, setShowFilters] = useState(false);
+  const [searchTimeout, setSearchTimeout] = useState(null);
 
   useEffect(() => {
     fetchLocations();
+    fetchRestaurants('');
   }, []);
 
-  // Filter restaurants
-  const filteredRestaurants = RESTAURANTS.filter((restaurant) => {
-    const matchesSearch = restaurant.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || restaurant.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  }).sort((a, b) => {
-    if (sortBy === 'rating') return b.rating - a.rating;
-    if (sortBy === 'delivery') return a.deliveryTime - b.deliveryTime;
-    return 0;
-  });
+  // Search with debounce
+  useEffect(() => {
+    if (searchTimeout) clearTimeout(searchTimeout);
+    
+    const timeout = setTimeout(() => {
+      fetchRestaurants(searchQuery.trim());
+    }, 300);
+    
+    setSearchTimeout(timeout);
+    return () => clearTimeout(timeout);
+  }, [searchQuery]);
+
+  // Filter restaurants by category and sort
+  const filteredRestaurants = restaurants
+    .filter((restaurant) => {
+      if (selectedCategory === 'all') return true;
+      return restaurant.category === selectedCategory || restaurant.tags?.includes(selectedCategory);
+    })
+    .sort((a, b) => {
+      if (sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
+      if (sortBy === 'delivery') return (a.deliveryTime || 0) - (b.deliveryTime || 0);
+      return 0;
+    });
 
   return (
     <div className="screen home-screen">
@@ -105,19 +115,21 @@ export function HomeScreen({ onSelectRestaurant, onSelectLocation }) {
       </div>
 
       <h2>Restaurants</h2>
+      {errorMessage && <p className="error-text error-message">{errorMessage}</p>}
+      {isLoading && <p className="loading-text">Loading restaurants...</p>}
       <div className="restaurant-list">
-        {filteredRestaurants.length === 0 ? (
+        {filteredRestaurants.length === 0 && !isLoading ? (
           <p className="no-results">No restaurants found</p>
         ) : (
           filteredRestaurants.map((restaurant) => (
             <div key={restaurant.id} className="card">
               <div className="restaurant-header">
                 <h3>{restaurant.name}</h3>
-                <span className="rating-badge">★ {restaurant.rating}</span>
+                <span className="rating-badge">★ {(restaurant.rating || 0).toFixed(1)}</span>
               </div>
-              <p className="cuisine">{restaurant.cuisine}</p>
+              <p className="cuisine">{restaurant.tagline || 'Pet food delivery'}</p>
               <div className="restaurant-meta">
-                <span>🚚 {restaurant.deliveryTime} min</span>
+                <span>🚚 {restaurant.deliveryTime || 30} min</span>
               </div>
               <button
                 onClick={() => onSelectRestaurant(restaurant.id)}

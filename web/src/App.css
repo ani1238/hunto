@@ -920,3 +920,21 @@ textarea.form-input {
 .place-order-btn {
   margin: 16px 16px 32px;
 }
+
+/* Loading and Error States */
+.loading-text {
+  text-align: center;
+  color: #999;
+  padding: 20px;
+  font-size: 14px;
+}
+
+.error-message {
+  margin: 12px 16px;
+  padding: 12px;
+  background-color: #ffe0e0;
+  border: 1px solid #ff6b5b;
+  border-radius: 6px;
+  color: #e74c3c;
+  font-size: 13px;
+}
