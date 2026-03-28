@@ -47,12 +47,23 @@ export function HomeScreen({ onSelectRestaurant, onSelectLocation }) {
         }
       }
 
-      // Fetch restaurants
-      fetchRestaurants('');
+      // Fetch restaurants with location filter
+      if (selectedLocation) {
+        fetchRestaurants('', selectedLocation.latitude, selectedLocation.longitude);
+      } else {
+        fetchRestaurants('');
+      }
     };
 
     initializeApp();
   }, []);
+
+  // Refetch restaurants when selected location changes
+  useEffect(() => {
+    if (selectedLocation) {
+      fetchRestaurants('', selectedLocation.latitude, selectedLocation.longitude);
+    }
+  }, [selectedLocation?.id]);
 
   return (
     <div className="screen home-screen">

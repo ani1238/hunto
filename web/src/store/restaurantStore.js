@@ -1,12 +1,13 @@
 import { create } from 'zustand';
 import { apiRequest } from '../api/authApi';
+import { filterByRadius } from '../utils/distance';
 
 export const useRestaurantStore = create((set, get) => ({
   restaurants: [],
   isLoading: false,
   errorMessage: '',
 
-  fetchRestaurants: async (search = '') => {
+  fetchRestaurants: async (search = '', latitude = null, longitude = null) => {
     set({ isLoading: true, errorMessage: '' });
     try {
       const qs = search ? `?search=${encodeURIComponent(search)}` : '';
@@ -15,7 +16,13 @@ export const useRestaurantStore = create((set, get) => ({
         headers: { 'Content-Type': 'application/json' },
       });
 
-      const restaurantsList = Array.isArray(response) ? response : response.data || [];
+      let restaurantsList = Array.isArray(response) ? response : response.data || [];
+      
+      // Filter by 10km radius if location is provided
+      if (latitude && longitude) {
+        restaurantsList = filterByRadius(restaurantsList, latitude, longitude, 10);
+      }
+
       set({
         restaurants: restaurantsList,
         isLoading: false,
