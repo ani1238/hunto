@@ -1170,3 +1170,50 @@ textarea.form-input {
     opacity: 1;
   }
 }
+
+/* Google Places Autocomplete Dropdown */
+.pac-container {
+  background-color: #fff;
+  position: fixed !important;
+  z-index: 9999 !important;
+  border: 1px solid #ddd;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.pac-item {
+  padding: 10px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.pac-item:last-child {
+  border-bottom: none;
+}
+
+.pac-item:hover {
+  background-color: #f0f0f0;
+}
+
+.pac-item-selected {
+  background-color: #e8f4ff;
+}
+
+.pac-matched {
+  font-weight: bold;
+}
+
+.location-search-container {
+  position: relative;
+  z-index: 100;
+}
+
+.location-search-container input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}

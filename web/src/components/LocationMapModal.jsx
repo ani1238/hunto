@@ -165,7 +165,7 @@ export function LocationMapModal({ isOpen, onClose, onSelectLocation }) {
           <button className="close-btn" onClick={onClose}>✕</button>
         </div>
 
-        <div style={{ padding: '12px 16px', borderBottom: '1px solid #eee' }}>
+        <div className="location-search-container" style={{ padding: '12px 16px', borderBottom: '1px solid #eee' }}>
           <input
             ref={searchInputRef}
             type="text"
