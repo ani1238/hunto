@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useLocationStore } from '../store/locationStore';
+import { LocationMapModal } from '../components/LocationMapModal';
 
 export function LocationSelectorScreen({ onLocationSelected, onBack }) {
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showMapModal, setShowMapModal] = useState(false);
   const [address, setAddress] = useState('');
   const [label, setLabel] = useState('Home');
   const {
@@ -37,6 +39,19 @@ export function LocationSelectorScreen({ onLocationSelected, onBack }) {
   const handleSelectLocation = async (location) => {
     await selectLocation(location.id);
     onLocationSelected?.(location);
+  };
+
+  const handleMapLocationSelected = async (locationData) => {
+    const success = await saveLocation(
+      locationData.address,
+      locationData.latitude,
+      locationData.longitude,
+      locationData.label
+    );
+    if (success) {
+      setShowMapModal(false);
+      fetchLocations();
+    }
   };
 
   return (
@@ -109,10 +124,21 @@ export function LocationSelectorScreen({ onLocationSelected, onBack }) {
           </div>
         </div>
       ) : (
-        <button className="btn btn-primary add-btn" onClick={() => setShowAddForm(true)}>
-          + Add New Location
-        </button>
+        <div className="add-location-options">
+          <button className="btn btn-primary add-btn" onClick={() => setShowAddForm(true)}>
+            + Add Address Manually
+          </button>
+          <button className="btn btn-secondary map-btn" onClick={() => setShowMapModal(true)}>
+            📍 Pick from Map
+          </button>
+        </div>
       )}
+
+      <LocationMapModal
+        isOpen={showMapModal}
+        onClose={() => setShowMapModal(false)}
+        onSelectLocation={handleMapLocationSelected}
+      />
     </div>
   );
 }
