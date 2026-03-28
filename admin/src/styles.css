@@ -1,0 +1,394 @@
+* {
+  box-sizing: border-box;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #f6f7fb;
+  color: #1f2937;
+}
+
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.keyBox {
+  display: flex;
+  gap: 8px;
+}
+
+.tabs {
+  margin-top: 16px;
+  display: flex;
+  gap: 8px;
+}
+
+.tabs button {
+  border: 1px solid #d1d5db;
+  background: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.tabs button.active {
+  background: #111827;
+  color: #fff;
+  border-color: #111827;
+}
+
+.info,
+.error,
+.success {
+  margin: 12px 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+.info { background: #eef2ff; color: #3730a3; }
+.error { background: #fee2e2; color: #b91c1c; }
+.success { background: #dcfce7; color: #166534; }
+.hint { margin: 6px 0 0; color: #6b7280; font-size: 13px; }
+
+.grid {
+  margin-top: 16px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.stat {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.statValue {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.statLabel {
+  margin-top: 4px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.panel {
+  margin-top: 16px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+input, select, button {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
+
+button {
+  cursor: pointer;
+  background: #fff;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+th, td {
+  border-bottom: 1px solid #e5e7eb;
+  padding: 10px 8px;
+  text-align: left;
+}
+
+th {
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.menuLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 16px;
+}
+
+.phoneWrap h3 {
+  margin-top: 0;
+}
+
+.phoneFrame {
+  background: #111827;
+  border-radius: 28px;
+  padding: 12px;
+  width: 320px;
+  height: 620px;
+  position: sticky;
+  top: 20px;
+}
+
+.phoneNotch {
+  width: 120px;
+  height: 20px;
+  background: #1f2937;
+  border-radius: 12px;
+  margin: 0 auto 10px;
+}
+
+.phoneScreen {
+  background: #f9fafb;
+  border-radius: 20px;
+  height: calc(100% - 30px);
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+.previewHeader {
+  padding: 14px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.previewTitle {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.previewSub {
+  color: #6b7280;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.previewOpen {
+  height: fit-content;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.previewOpen.open {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.previewOpen.closed {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.previewMenuTitle {
+  padding: 12px 14px 6px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.previewList {
+  padding: 0 12px 12px;
+  overflow-y: auto;
+  height: calc(100% - 90px);
+}
+
+.previewItem {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.previewInfo {
+  min-width: 0;
+  flex: 1;
+}
+
+.previewVegLine {
+  margin-bottom: 5px;
+}
+
+.previewVegIcon {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  border: 1.5px solid #16a34a;
+  display: inline-block;
+  position: relative;
+}
+
+.previewVegIcon::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 4px;
+  height: 4px;
+  border-radius: 99px;
+  background: #16a34a;
+}
+
+.previewVegIcon.nonVeg {
+  border-color: #dc2626;
+}
+
+.previewVegIcon.nonVeg::after {
+  background: #dc2626;
+}
+
+.previewRight {
+  width: 74px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.previewThumbWrap {
+  width: 62px;
+  height: 62px;
+  flex-shrink: 0;
+}
+
+.previewThumb {
+  width: 62px;
+  height: 62px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #e5e7eb;
+  background: #f3f4f6;
+}
+
+.previewThumbFallback {
+  width: 62px;
+  height: 62px;
+  border-radius: 8px;
+  border: 1px dashed #d1d5db;
+  color: #9ca3af;
+  font-size: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4px;
+  background: #f9fafb;
+}
+
+.previewBadge {
+  color: #d97706;
+  font-size: 10px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.previewName {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.previewPrice {
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.previewDesc {
+  margin-top: 4px;
+  color: #6b7280;
+  font-size: 11px;
+  line-height: 1.3;
+  max-width: 180px;
+}
+
+.previewAddBtn {
+  align-self: center;
+  border: 1px solid #ef4444;
+  color: #ef4444;
+  background: #fff;
+  font-weight: 800;
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+
+.previewAddBtn.disabled {
+  opacity: 0.5;
+}
+
+.previewEmpty {
+  padding: 14px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.orderAlert {
+  margin-top: 12px;
+  background: #fff7ed;
+  border: 1px solid #fdba74;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.orderAlertHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.orderAlertHead h3 {
+  margin: 0;
+}
+
+.orderAlertTimer {
+  background: #ef4444;
+  color: #fff;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.orderAlertText {
+  margin: 8px 0 10px;
+  color: #7c2d12;
+  font-size: 14px;
+}
+
+.orderAlertActions {
+  display: flex;
+  gap: 8px;
+}
+
+.orderAlertAccept {
+  background: #16a34a;
+  color: #fff;
+  border-color: #16a34a;
+  font-weight: 700;
+}

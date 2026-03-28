@@ -1,0 +1,61 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+*.env
+
+# Go
+bin/
+dist/
+*.exe
+*.dll
+*.so
+*.dylib
+go.sum
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+dist/
+.turbo
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Build outputs
+/build
+/out
+
+# Database
+*.db
+*.sqlite3
+dump.sql
+
+# Temporary files
+*.tmp
+.cache/
+
+# Mobile
+.expo/
+.expo-shared/
+dist-ssr/
+coverage/
+
+# Docker
+.docker/
