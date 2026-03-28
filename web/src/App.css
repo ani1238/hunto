@@ -134,6 +134,20 @@ html, body {
   outline: none;
 }
 
+.form-input {
+  width: 100%;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 16px;
+  margin-bottom: 12px;
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: #FF6B35;
+}
+
 .otp-input {
   text-align: center;
   letter-spacing: 8px;

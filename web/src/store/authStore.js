@@ -14,6 +14,7 @@ export const useAuthStore = create((set, get) => ({
   isLoading: false,
   errorMessage: '',
   user: null,
+  profileCompleted: false,
 
   requestOtp: async (phoneNumber) => {
     set({ isLoading: true, errorMessage: '' });
@@ -90,6 +91,39 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
+  completeProfile: async (name, email) => {
+    const { phoneNumber } = get();
+
+    if (!name || !email) {
+      set({ errorMessage: 'Name and email are required.' });
+      return false;
+    }
+
+    set({ isLoading: true, errorMessage: '' });
+    try {
+      const data = await apiRequest('/api/users/me/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        data: JSON.stringify({ name, email, phone: phoneNumber }),
+      });
+
+      set({
+        isLoading: false,
+        profileCompleted: true,
+        user: data.user || { phone: phoneNumber, name, email },
+        errorMessage: '',
+      });
+
+      return true;
+    } catch (err) {
+      set({
+        isLoading: false,
+        errorMessage: err.message || 'Failed to complete profile.',
+      });
+      return false;
+    }
+  },
+
   logout: () => {
     clearAuthToken();
     set({
@@ -99,6 +133,7 @@ export const useAuthStore = create((set, get) => ({
       otpSent: false,
       isLoading: false,
       errorMessage: '',
+      profileCompleted: false,
       user: null,
     });
   },

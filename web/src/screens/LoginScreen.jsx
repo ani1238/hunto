@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useAuthStore } from '../store/authStore';
+import { ProfileScreen } from './ProfileScreen';
 
 export function LoginScreen() {
-  const [step, setStep] = useState('phone');
+  const [step, setStep] = useState('phone'); // 'phone' or 'otp' or 'profile'
   const [phone, setPhone] = useState('');
-  const { otpCode, requestOtp, verifyOtp, otpSent, isLoading, errorMessage, setOtpCode } = useAuthStore();
+  const { otpCode, requestOtp, verifyOtp, otpSent, isLoading, errorMessage, setOtpCode, profileCompleted, isAuthenticated } = useAuthStore();
 
   const handleSendOtp = async () => {
     const success = await requestOtp(phone);
@@ -16,9 +17,23 @@ export function LoginScreen() {
   const handleVerifyOtp = async () => {
     const success = await verifyOtp(otpCode);
     if (success) {
-      // Auto navigates due to isAuthenticated state
+      const { profileCompleted: isProfileCompleted } = useAuthStore.getState();
+      if (isProfileCompleted) {
+        // Navigate to home (handled by App.jsx checking isAuthenticated)
+      } else {
+        setStep('profile');
+      }
     }
   };
+
+  const handleProfileComplete = () => {
+    // Navigate to home (handled by App.jsx checking isAuthenticated)
+  };
+
+  // If profile step is active, show ProfileScreen
+  if (step === 'profile') {
+    return <ProfileScreen onComplete={handleProfileComplete} />;
+  }
 
   return (
     <div className="screen login-screen">
