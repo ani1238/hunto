@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuthStore } from './store/authStore';
 import { useCartStore } from './store/cartStore';
 import { LoginScreen } from './screens/LoginScreen';
@@ -12,9 +12,51 @@ import './App.css';
 function App() {
   const { isAuthenticated } = useAuthStore();
   const { getItemCount } = useCartStore();
-  const [currentView, setCurrentView] = useState('home'); // 'home', 'menu', 'location', 'cart', 'tracking'
+  const [currentView, setCurrentView] = useState('home');
   const [selectedRestaurantId, setSelectedRestaurantId] = useState(null);
   const [orderId, setOrderId] = useState(null);
+
+  // Sync with browser history
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname;
+      if (path === '/' || path === '') {
+        setCurrentView('home');
+        setSelectedRestaurantId(null);
+      } else if (path.startsWith('/menu/')) {
+        const id = path.split('/')[2];
+        setSelectedRestaurantId(id);
+        setCurrentView('menu');
+      } else if (path === '/location') {
+        setCurrentView('location');
+      } else if (path === '/cart') {
+        setCurrentView('cart');
+      } else if (path.startsWith('/order/')) {
+        const id = path.split('/')[2];
+        setOrderId(id);
+        setCurrentView('tracking');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // Update URL when view changes
+  useEffect(() => {
+    let path = '/';
+    if (currentView === 'menu' && selectedRestaurantId) {
+      path = `/menu/${selectedRestaurantId}`;
+    } else if (currentView === 'location') {
+      path = '/location';
+    } else if (currentView === 'cart') {
+      path = '/cart';
+    } else if (currentView === 'tracking' && orderId) {
+      path = `/order/${orderId}`;
+    }
+    
+    window.history.pushState(null, '', path);
+  }, [currentView, selectedRestaurantId, orderId]);
 
   const handleSelectRestaurant = (restaurantId) => {
     setSelectedRestaurantId(restaurantId);
@@ -22,8 +64,7 @@ function App() {
   };
 
   const handleBackToHome = () => {
-    setCurrentView('home');
-    setSelectedRestaurantId(null);
+    window.history.back();
   };
 
   const handleSelectLocation = () => {
@@ -31,7 +72,7 @@ function App() {
   };
 
   const handleLocationSelected = () => {
-    setCurrentView('home');
+    window.history.back();
   };
 
   const handleGoToCart = () => {
@@ -44,8 +85,7 @@ function App() {
   };
 
   const handleBackFromTracking = () => {
-    setCurrentView('home');
-    setOrderId(null);
+    window.history.back();
   };
 
   const cartCount = getItemCount();
