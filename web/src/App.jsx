@@ -89,15 +89,22 @@ function App() {
   };
 
   const cartCount = getItemCount();
+  const { getTotalPrice } = useCartStore();
+  const cartTotal = getTotalPrice();
 
   return (
     <div className="app">
       {isAuthenticated && (
         <nav className="navbar">
           <div className="logo">🐾 Hunto</div>
-          <button className="cart-btn" onClick={handleGoToCart}>
-            🛒 Cart ({cartCount})
-          </button>
+          {cartCount > 0 && (
+            <button className="cart-btn" onClick={handleGoToCart}>
+              <div className="cart-badge">{cartCount}</div>
+              <span className="cart-label">View Cart</span>
+              <span className="cart-price">₹{cartTotal.toFixed(2)}</span>
+              <span className="cart-arrow">→</span>
+            </button>
+          )}
         </nav>
       )}
 
