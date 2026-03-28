@@ -35,7 +35,7 @@ services:
       STORAGE_ENDPOINT: 'http://localhost:9000'
       STORAGE_ACCESS_KEY_ID: 'minioadmin'
       STORAGE_SECRET_ACCESS_KEY: 'minioadmin'
-      STORAGE_PUBLIC_BASE_URL: 'http://${HOST_LAN_IP:-localhost}:9000/hunto-images'
+      STORAGE_PUBLIC_BASE_URL: 'http://192.168.1.24:9000/hunto-images'
       STORAGE_UPLOAD_PREFIX: 'menu-items'
       STORAGE_FORCE_PATH_STYLE: 'true'
       STORAGE_MAX_UPLOAD_MB: '5'
@@ -80,7 +80,7 @@ services:
         cat >/tmp/cors.json <<'EOF'
         [
           {
-            "AllowedOrigins": ["http://localhost:5174", "http://127.0.0.1:5174"],
+            "AllowedOrigins": ["http://localhost:5173", "http://localhost:5174", "http://127.0.0.1:5173", "http://127.0.0.1:5174", "http://192.168.1.24:5173", "http://192.168.1.24:5174"],
             "AllowedMethods": ["GET", "PUT", "HEAD"],
             "AllowedHeaders": ["*"],
             "ExposeHeaders": ["ETag"],

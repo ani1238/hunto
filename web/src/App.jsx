@@ -6,13 +6,15 @@ import { HomeScreen } from './screens/HomeScreen';
 import { MenuScreen } from './screens/MenuScreen';
 import { LocationSelectorScreen } from './screens/LocationSelectorScreen';
 import { CartScreen } from './screens/CartScreen';
+import { OrderTrackingScreen } from './screens/OrderTrackingScreen';
 import './App.css';
 
 function App() {
   const { isAuthenticated } = useAuthStore();
   const { getItemCount } = useCartStore();
-  const [currentView, setCurrentView] = useState('home'); // 'home', 'menu', 'location', 'cart'
+  const [currentView, setCurrentView] = useState('home'); // 'home', 'menu', 'location', 'cart', 'tracking'
   const [selectedRestaurantId, setSelectedRestaurantId] = useState(null);
+  const [orderId, setOrderId] = useState(null);
 
   const handleSelectRestaurant = (restaurantId) => {
     setSelectedRestaurantId(restaurantId);
@@ -36,8 +38,14 @@ function App() {
     setCurrentView('cart');
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = (newOrderId) => {
+    setOrderId(newOrderId);
+    setCurrentView('tracking');
+  };
+
+  const handleBackFromTracking = () => {
     setCurrentView('home');
+    setOrderId(null);
   };
 
   const cartCount = getItemCount();
@@ -61,6 +69,8 @@ function App() {
         <LocationSelectorScreen onLocationSelected={handleLocationSelected} onBack={handleBackToHome} />
       ) : currentView === 'cart' ? (
         <CartScreen onBack={handleBackToHome} onCheckout={handleCheckout} />
+      ) : currentView === 'tracking' ? (
+        <OrderTrackingScreen orderId={orderId} onBack={handleBackFromTracking} />
       ) : (
         <HomeScreen onSelectRestaurant={handleSelectRestaurant} onSelectLocation={handleSelectLocation} />
       )}

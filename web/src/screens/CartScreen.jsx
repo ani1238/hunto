@@ -31,8 +31,18 @@ export function CartScreen({ onBack, onCheckout }) {
     setError('');
 
     try {
-      // API call will be added here
-      onCheckout?.();
+      // TODO: Replace with actual API call to create order
+      // const response = await fetch(`${API_BASE_URL}/api/orders`, {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ items, location: selectedLocation })
+      // });
+      // const data = await response.json();
+      // onCheckout?.(data.data.id);
+      
+      // Mock: Use current timestamp as order ID
+      const mockOrderId = Math.floor(Date.now() / 1000).toString();
+      onCheckout?.(mockOrderId);
       clearCart();
     } catch (err) {
       setError('Failed to place order. Please try again.');
