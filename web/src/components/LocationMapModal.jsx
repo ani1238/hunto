@@ -19,6 +19,7 @@ export function LocationMapModal({ isOpen, onClose, onSelectLocation }) {
   const [addressLine1, setAddressLine1] = useState('');
   const [mapCenter, setMapCenter] = useState(defaultCenter);
   const [isLoadingAddress, setIsLoadingAddress] = useState(false);
+  const [isNewLocation, setIsNewLocation] = useState(true);
   const searchInputRef = useRef(null);
   const autocompleteRef = useRef(null);
 
@@ -56,23 +57,15 @@ export function LocationMapModal({ isOpen, onClose, onSelectLocation }) {
   };
 
   useEffect(() => {
-    if (selectedLocation && isOpen) {
-      const center = {
-        lat: selectedLocation.latitude || defaultCenter.lat,
-        lng: selectedLocation.longitude || defaultCenter.lng,
-      };
-      setMapCenter(center);
-      setMarkerPosition(center);
-      setLocationLabel(selectedLocation.address || '');
-      setAddressLine1(selectedLocation.addressLine || '');
-    } else if (isOpen && !selectedLocation) {
-      // Fresh modal - clear fields
+    if (isOpen) {
+      // Default: creating new location
+      setIsNewLocation(true);
       setAddressLine1('');
       setLocationLabel('');
       setMarkerPosition(defaultCenter);
       setMapCenter(defaultCenter);
     }
-  }, [isOpen, selectedLocation]);
+  }, [isOpen]);
 
   const reverseGeocode = async (lat, lng) => {
     setIsLoadingAddress(true);
