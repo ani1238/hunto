@@ -74,18 +74,28 @@ hunto/
 ## 🛠 Tech Stack
 
 ### Frontend
-- **React 19** - UI framework
-- **Vite 5** - Build tool (web/admin)
-- **Expo 54** - Managed React Native (mobile)
-- **React Navigation** - Routing
+- **React 18** - UI framework (web/admin)
+- **Vite 5** - Build tool
+- **React Native + Expo** - Mobile (iOS/Android)
 - **Zustand** - State management
-- **React Native Web** - Web compatibility
 
 ### Backend
 - **Go 1.24** - Language
 - **Gin** - HTTP framework
 - **GORM** - ORM
 - **PostgreSQL 15** - Database
+
+### Authentication
+- **OTP via SMS** - Phone number login
+- **Twilio/AWS SNS** - SMS delivery
+- **JWT** - Session tokens
+
+### Infrastructure
+- **Docker Compose** - Local development
+- **Railway** - Backend + PostgreSQL ($7/mo)
+- **Vercel** - Web + Admin hosting ($0)
+- **AWS S3** - Image storage ($1-10/mo)
+- **Twilio** - SMS OTP ($1-5/mo)
 
 ## 🚀 Getting Started
 
@@ -158,15 +168,16 @@ cd mobile && eas build --platform ios
 
 ## 💰 Cost (Monthly)
 
-| Service | Cost |
-|---------|------|
-| Web Hosting | $0 |
-| Admin Hosting | $0 |
-| Backend | $7 |
-| Database | $0 |
-| Storage | $1 |
-| **Total** | **$8-10/mo** |
-| iOS App (yearly) | $99 |
+| Service | Cost | Notes |
+|---------|------|-------|
+| Web Hosting | $0 | Vercel free tier |
+| Admin Hosting | $0 | Vercel free tier |
+| Backend | $7 | Railway |
+| Database | $0 | 5GB included |
+| Storage | $1-5 | AWS S3 |
+| SMS (OTP) | $1-5 | Twilio (~100 SMS = $1) |
+| **Total** | **$10-20/mo** | **Or $110-120 with iOS** |
+| iOS App (yearly) | $99 | Apple Developer account |
 
 ## 🔐 Environment Variables
 
@@ -176,12 +187,21 @@ DATABASE_URL=postgresql://user:pass@localhost:5432/hunto
 API_KEY=your-secret-key
 STORAGE_BUCKET=hunto-images
 CORS_ALLOWED_ORIGINS=http://localhost:5173,https://hunto.vercel.app
+
+# SMS OTP Configuration
+SMS_PROVIDER=twilio  # or aws-sns
+TWILIO_ACCOUNT_SID=your-account-sid
+TWILIO_AUTH_TOKEN=your-auth-token
+TWILIO_PHONE_NUMBER=+1234567890
+
+# JWT Configuration
+JWT_SECRET=your-jwt-secret-key
+JWT_EXPIRY=24h  # Token expires after 24 hours
 ```
 
 ### Web (web/.env.local)
 ```
 VITE_API_BASE_URL=http://localhost:8080
-VITE_GOOGLE_CLIENT_ID=your-client-id
 ```
 
 ### Mobile (mobile/.env)

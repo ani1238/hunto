@@ -2,6 +2,22 @@
 
 Progressive Web App (PWA) built with React + Vite, optimized for mobile devices.
 
+## Authentication Flow
+
+The app uses **OTP-based authentication** (no Google login needed):
+
+```
+1. User enters phone number (+91XXXXXXXXXX)
+   ↓
+2. Backend sends 6-digit OTP via SMS (Twilio)
+   ↓
+3. User enters OTP from SMS
+   ↓
+4. Backend verifies OTP and issues JWT token
+   ↓
+5. User logged in → Home screen
+```
+
 ## Quick Start
 
 ```bash
@@ -15,8 +31,16 @@ npm run dev
 npm run build
 
 # Preview production build
-npm preview
+npm run preview
 ```
+
+## Features
+
+- ✅ **OTP Login** - Phone number + 6-digit OTP
+- ✅ **PWA** - Works offline, installable on home screen
+- ✅ **Mobile-first** - Optimized for phones
+- ✅ **Fast** - Cached with service worker
+- ✅ **Responsive** - Works on all screen sizes
 
 ## Architecture
 
@@ -24,16 +48,45 @@ npm preview
 web/
 ├── src/
 │   ├── index.jsx          # React entry point
-│   ├── App.jsx            # Main app component
-│   ├── index.css          # Global styles
-│   └── screens/           # Page components (add as needed)
-├── public/
-│   ├── index.html         # PWA meta tags
-│   ├── manifest.json      # PWA manifest
-│   ├── sw.js              # Service worker (offline support)
-│   ├── icon.png           # App icon
-│   └── screenshot.png     # PWA screenshot
+│   ├── App.jsx            # Login + Home screens
+│   └── App.css            # Mobile-first styles
+├── index.html             # Entry HTML (PWA meta tags)
 └── vite.config.js         # Vite configuration
+```
+
+## Authentication
+
+### Send OTP
+```javascript
+// POST /api/auth/send-otp
+{
+  "phone": "9876543210"
+}
+
+// Response
+{
+  "success": true,
+  "message": "OTP sent to +919876543210"
+}
+```
+
+### Verify OTP
+```javascript
+// POST /api/auth/verify-otp
+{
+  "phone": "9876543210",
+  "otp": "123456"
+}
+
+// Response
+{
+  "token": "eyJhbGciOiJIUzI1NiIs...",
+  "user": {
+    "id": "user123",
+    "phone": "9876543210",
+    "name": "John Doe"
+  }
+}
 ```
 
 ## Testing on Phone
@@ -42,7 +95,7 @@ web/
 1. Start dev server: `npm run dev`
 2. Find your computer's IP: `ipconfig getifaddr en0` (macOS)
 3. On your phone, open: `http://YOUR_IP:5173`
-4. Test responsiveness, touch interactions, offline mode
+4. Test the OTP login flow
 
 ### Using ngrok for External Testing
 ```bash
