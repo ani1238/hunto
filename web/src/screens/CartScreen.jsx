@@ -3,16 +3,12 @@ import { useCartStore } from '../store/cartStore';
 import { useLocationStore } from '../store/locationStore';
 
 export function CartScreen({ onBack, onCheckout }) {
-  const { cart, getTotalPrice, updateQuantity, removeItem, clearCart } = useCartStore();
+  const { cart, removeItem, clearCart, placeOrder, loadCart } = useCartStore();
   const { selectedLocation } = useLocationStore();
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Load cart when component mounts
-    const loadCart = async () => {
-      await useCartStore.getState().loadCart();
-    };
     loadCart();
   }, []);
 
@@ -22,7 +18,7 @@ export function CartScreen({ onBack, onCheckout }) {
       return;
     }
 
-    if (cart.items.length === 0) {
+    if (!cart.items || cart.items.length === 0) {
       setError('Your cart is empty');
       return;
     }
@@ -32,7 +28,7 @@ export function CartScreen({ onBack, onCheckout }) {
 
     try {
       const locationId = selectedLocation.id;
-      const result = await useCartStore.getState().placeOrder(locationId);
+      const result = await placeOrder(locationId);
       
       if (result.success && result.order?.id) {
         onCheckout?.(result.order.id);
@@ -47,7 +43,6 @@ export function CartScreen({ onBack, onCheckout }) {
   };
 
   const items = cart.items || [];
-  const totalPrice = getTotalPrice ? getTotalPrice() : cart.totalPrice || 0;
 
   if (items.length === 0) {
     return (
@@ -105,7 +100,7 @@ export function CartScreen({ onBack, onCheckout }) {
             <div className="item-controls">
               <button onClick={() => removeItem(item.menuItemId)} className="qty-btn">−</button>
               <span className="qty">{item.quantity}</span>
-              <button onClick={() => updateQuantity(item.menuItemId, item.quantity + 1)} className="qty-btn">+</button>
+              <button onClick={() => {}} className="qty-btn" disabled>+</button>
               <span className="item-total">₹{(item.unitPrice * item.quantity).toFixed(2)}</span>
             </div>
           </div>
@@ -125,11 +120,11 @@ export function CartScreen({ onBack, onCheckout }) {
         )}
         <div className="price-row">
           <span>Delivery</span>
-          <span>₹{cart.totalPrice && cart.subtotal ? ((cart.totalPrice - cart.subtotal + (cart.discountAmount || 0)) * 0.24).toFixed(2) || 20 : 20}</span>
+          <span>₹20</span>
         </div>
         <div className="price-row total">
           <span>Total</span>
-          <span>₹{totalPrice.toFixed(2)}</span>
+          <span>₹{(cart.totalPrice || 0).toFixed(2)}</span>
         </div>
       </div>
 
