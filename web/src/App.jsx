@@ -26,14 +26,14 @@ function App() {
 
   return (
     <div className="app">
-      <nav className="navbar">
-        <div className="logo">🐾 Hunto</div>
-        {isAuthenticated && (
+      {isAuthenticated && (
+        <nav className="navbar">
+          <div className="logo">🐾 Hunto</div>
           <button className="cart-btn">
             🛒 Cart ({cartCount})
           </button>
-        )}
-      </nav>
+        </nav>
+      )}
 
       {!isAuthenticated ? (
         <LoginScreen />

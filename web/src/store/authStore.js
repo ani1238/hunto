@@ -1,8 +1,13 @@
 import { create } from 'zustand';
 import { apiRequest, setAuthToken, clearAuthToken } from '../api/authApi';
 
+const initializeAuth = () => {
+  const token = localStorage.getItem('auth_token');
+  return !!token;
+};
+
 export const useAuthStore = create((set, get) => ({
-  isAuthenticated: false,
+  isAuthenticated: initializeAuth(),
   phoneNumber: '',
   otpCode: '',
   otpSent: false,
