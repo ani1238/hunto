@@ -3,7 +3,7 @@ import { useCartStore } from '../store/cartStore';
 import { useRestaurantStore } from '../store/restaurantStore';
 
 export function MenuScreen({ restaurantId, onBack }) {
-  const { addItem, removeItem, getItemQuantity, errorMessage: cartError } = useCartStore();
+  const { items, addItem, removeItem, getItemQuantity, errorMessage: cartError } = useCartStore();
   const { getRestaurantById, errorMessage } = useRestaurantStore();
   const [restaurant, setRestaurant] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
