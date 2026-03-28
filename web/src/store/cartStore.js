@@ -1,42 +1,95 @@
 import { create } from 'zustand';
+import { apiRequest } from '../api/authApi';
 
 export const useCartStore = create((set, get) => ({
   items: [],
   restaurantId: null,
+  isLoading: false,
+  errorMessage: '',
 
-  addItem: (item) => {
-    const { items } = get();
-    const existing = items.find((i) => i.id === item.id);
-
-    if (existing) {
-      set({
-        items: items.map((i) =>
-          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
-        ),
+  addItem: async (item) => {
+    set({ isLoading: true, errorMessage: '' });
+    try {
+      const response = await apiRequest('/api/cart/items', {
+        method: 'POST',
+        data: {
+          menuItemId: Number(item.id),
+          quantity: get().getItemQuantity(item.id) + 1,
+        },
       });
-    } else {
+
+      const backendCart = response.data || response;
       set({
-        items: [...items, { ...item, quantity: 1 }],
+        items: backendCart.items || [],
+        restaurantId: backendCart.restaurantId,
+        isLoading: false,
+      });
+    } catch (error) {
+      set({
+        isLoading: false,
+        errorMessage: error.message || 'Failed to add item',
       });
     }
   },
 
-  removeItem: (itemId) => {
-    set({
-      items: get().items.filter((i) => i.id !== itemId),
-    });
+  removeItem: async (itemId) => {
+    const currentQuantity = get().getItemQuantity(itemId);
+    if (currentQuantity <= 1) {
+      return get().removeItemCompletely(itemId);
+    }
+    return get().updateQuantity(itemId, currentQuantity - 1);
   },
 
-  updateQuantity: (itemId, quantity) => {
-    if (quantity <= 0) {
-      set({
-        items: get().items.filter((i) => i.id !== itemId),
+  removeItemCompletely: async (itemId) => {
+    set({ isLoading: true, errorMessage: '' });
+    try {
+      const response = await apiRequest('/api/cart/items', {
+        method: 'POST',
+        data: {
+          menuItemId: Number(itemId),
+          quantity: 0,
+        },
       });
-    } else {
+
+      const backendCart = response.data || response;
       set({
-        items: get().items.map((i) =>
-          i.id === itemId ? { ...i, quantity } : i
-        ),
+        items: backendCart.items || [],
+        restaurantId: backendCart.restaurantId,
+        isLoading: false,
+      });
+    } catch (error) {
+      set({
+        isLoading: false,
+        errorMessage: error.message || 'Failed to remove item',
+      });
+    }
+  },
+
+  updateQuantity: async (itemId, quantity) => {
+    if (quantity <= 0) {
+      return get().removeItemCompletely(itemId);
+    }
+
+    set({ isLoading: true, errorMessage: '' });
+    try {
+      const response = await apiRequest('/api/cart/items', {
+        method: 'POST',
+        data: {
+          menuItemId: Number(itemId),
+          quantity,
+        },
+      });
+
+      const backendCart = response.data || response;
+      set({
+        items: backendCart.items || [],
+        restaurantId: backendCart.restaurantId,
+        isLoading: false,
+      });
+    } catch (error) {
+      set({
+        isLoading: false,
+        errorMessage: error.message || 'Failed to update quantity',
       });
     }
   },
@@ -53,12 +106,28 @@ export const useCartStore = create((set, get) => ({
     return get().items.reduce((sum, item) => sum + item.quantity, 0);
   },
 
-  clear: () => {
-    set({ items: [], restaurantId: null });
+  getItemQuantity: (itemId) => {
+    const item = get().items.find((i) => i.id === itemId);
+    return item?.quantity || 0;
   },
 
-  clearCart: () => {
-    set({ items: [], restaurantId: null });
+  clear: async () => {
+    set({ isLoading: true, errorMessage: '' });
+    try {
+      await apiRequest('/api/cart/clear', {
+        method: 'POST',
+      });
+      set({ items: [], restaurantId: null, isLoading: false });
+    } catch (error) {
+      set({
+        isLoading: false,
+        errorMessage: error.message || 'Failed to clear cart',
+      });
+    }
+  },
+
+  clearCart: async () => {
+    return get().clear();
   },
 
   setRestaurant: (restaurantId) => {
