@@ -3,7 +3,7 @@ import { useCartStore } from '../store/cartStore';
 import { useRestaurantStore } from '../store/restaurantStore';
 
 export function MenuScreen({ restaurantId, onBack }) {
-  const { addItem, items, removeItem } = useCartStore();
+  const { addItem, removeItem, getItemQuantity, errorMessage: cartError } = useCartStore();
   const { getRestaurantById, errorMessage } = useRestaurantStore();
   const [restaurant, setRestaurant] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -16,11 +16,22 @@ export function MenuScreen({ restaurantId, onBack }) {
       setIsLoading(false);
     };
     loadRestaurant();
-  }, [restaurantId]);
+  }, [restaurantId, getRestaurantById]);
 
-  const getItemQuantity = (itemId) => {
-    const item = items.find((i) => i.id === itemId);
-    return item?.quantity || 0;
+  const handleAddItem = async (item) => {
+    await addItem({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      description: item.description,
+      image: item.image,
+      restaurantId: restaurant.id,
+      restaurantName: restaurant.name,
+    });
+  };
+
+  const handleRemoveItem = async (itemId) => {
+    await removeItem(itemId);
   };
 
   if (isLoading) {
@@ -46,30 +57,6 @@ export function MenuScreen({ restaurantId, onBack }) {
   }
 
   const menuItems = restaurant.menuItems || restaurant.menu || [];
-
-  const handleAddItem = async (item) => {
-    try {
-      await addItem({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        description: item.description,
-        image: item.image,
-        restaurantId: restaurant.id,
-        restaurantName: restaurant.name,
-      });
-    } catch (error) {
-      console.error('Failed to add item:', error);
-    }
-  };
-
-  const handleRemoveItem = async (itemId) => {
-    try {
-      await removeItem(itemId);
-    } catch (error) {
-      console.error('Failed to remove item:', error);
-    }
-  };
 
   return (
     <div className="screen menu-screen">
