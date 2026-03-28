@@ -1,68 +1,203 @@
-# 🐾 Hunto — Pet Food Delivery App
+# Hunto - Pet Food Delivery Platform
 
-> Like Swiggy, but for your pets!
+A complete pet food delivery solution with web (PWA), mobile (Expo), admin portal, and Go backend API.
 
-## Project Structure
+## 🚀 Quick Links
+
+| Component | Purpose | Tech | Deploy To |
+|-----------|---------|------|-----------|
+| **Web** | Customer app (phone-optimized) | React + Vite + PWA | [Vercel](https://vercel.com) ($0) |
+| **Mobile** | iOS/Android native (optional) | React Native + Expo | [EAS Build](https://eas.dev) (Free-$99) |
+| **Admin** | Partner management portal | React + Vite | [Vercel](https://vercel.com) ($0) |
+| **Backend** | REST API | Go + Gin + PostgreSQL | [Railway](https://railway.app) ($7/mo) |
+
+## 📦 Project Structure
 
 ```
 hunto/
-├── mobile/          # React Native (Expo) app
-│   ├── src/
-│   │   ├── screens/         # HomeScreen, RestaurantScreen, CartScreen
-│   │   ├── components/      # RestaurantCard, BannerCarousel, MenuItemCard, CartBar
-│   │   ├── navigation/      # Stack navigator
-│   │   ├── store/           # Zustand cart store
-│   │   └── constants/       # theme, mockData
-│   └── App.js
+├── web/                    # Customer web app (PWA, phone-first)
+│   ├── public/            # PWA manifest, service worker
+│   ├── src/               # React components
+│   └── README.md          # Web app guide
 │
-├── backend/         # Node.js + Express REST API
-│   └── src/
-│       ├── routes/          # auth, restaurants, orders
-│       ├── controllers/     # (next: add business logic)
-│       ├── models/          # (next: Mongoose schemas)
-│       └── middleware/      # (next: auth middleware)
+├── mobile/                # Native app (iOS/Android via Expo)
+│   ├── src/               # React Native screens & components
+│   ├── app.json           # Expo configuration
+│   └── README.md          # Mobile app guide
 │
-└── admin/           # (coming soon: restaurant admin dashboard)
+├── admin/                 # Partner portal (restaurant management)
+│   ├── src/               # React components
+│   └── README.md          # Admin guide
+│
+├── shared/                # Reusable code (web + mobile)
+│   ├── components/        # UI components
+│   ├── hooks/             # Custom React hooks
+│   ├── api/               # Backend API client
+│   ├── store/             # Zustand state management
+│   ├── constants/         # Theme, mock data
+│   └── types/             # Type definitions
+│
+├── backend-go/            # REST API & business logic
+│   ├── handlers/          # HTTP route handlers
+│   ├── models/            # Database models
+│   ├── middleware/        # Auth, CORS, logging
+│   ├── config.go          # Configuration management
+│   └── README.md          # Backend guide
+│
+├── docker-compose.yml     # Local dev: PostgreSQL + MinIO + Go API
+└── .gitignore             # Git configuration
 ```
 
-## Tech Stack
+## 🎯 Launch Strategy (MVP to Production)
 
-| Layer       | Tech                              |
-|-------------|-----------------------------------|
-| Mobile      | React Native + Expo               |
-| Navigation  | React Navigation (Stack)          |
-| State       | Zustand                           |
-| Backend     | Node.js + Express                 |
-| Database    | MongoDB (Mongoose)                |
-| Auth        | JWT                               |
-| Styling     | React Native StyleSheet           |
+### Phase 1: Web App ($0 cost, 1-2 weeks)
+- [ ] Complete web app features (auth, restaurants, cart, checkout)
+- [ ] Test on real phones (iOS Safari, Android Chrome)
+- [ ] Deploy to Vercel
+- [ ] Launch and gather user feedback
 
-## Getting Started
+**Cost**: $0 | **Time**: 1-2 weeks
 
-### Mobile
+### Phase 2: Add Native Apps (Optional, $99/year)
+- [ ] Deploy iOS app via EAS Build → App Store
+- [ ] Deploy Android app via EAS Build → Play Store
+- [ ] Reuse 80% code from web via shared/ folder
+
+**Cost**: $99/year (iOS only) | **Time**: 1 week
+
+### Phase 3: Advanced Features ($7-50/month)
+- [ ] Real-time order tracking (WebSocket)
+- [ ] Push notifications (Firebase)
+- [ ] Payment gateway (Stripe)
+- [ ] Multi-region delivery zones
+
+## 🛠 Tech Stack
+
+### Frontend
+- **React 19** - UI framework
+- **Vite 5** - Build tool (web/admin)
+- **Expo 54** - Managed React Native (mobile)
+- **React Navigation** - Routing
+- **Zustand** - State management
+- **React Native Web** - Web compatibility
+
+### Backend
+- **Go 1.24** - Language
+- **Gin** - HTTP framework
+- **GORM** - ORM
+- **PostgreSQL 15** - Database
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+ (web/mobile/admin)
+- Go 1.24+ (backend)
+- Docker & Docker Compose (local dev)
+
+### Local Development
+
 ```bash
-cd mobile
-npm install
-npx expo start
+# 1. Clone repository
+git clone https://github.com/ani1238/hunto.git
+cd hunto
+
+# 2. Start backend + database
+docker-compose up -d
+
+# 3. Start web app (new terminal)
+cd web && npm install && npm run dev
+# http://localhost:5173
+
+# 4. Start admin portal (new terminal)
+cd admin && npm install && npm run dev
+# http://localhost:5174
+
+# 5. Start mobile app (new terminal)
+cd mobile && npm install && npm start
+# Press 'w' for web, 'i' for iOS, 'a' for Android
+```
+
+## 📖 Documentation
+
+- **[Web App](/web/README.md)** - PWA setup, testing, deployment
+- **[Mobile App](/mobile/README.md)** - Expo testing, EAS builds, TestFlight
+- **[Admin Portal](/admin/README.md)** - Partner dashboard
+- **[Backend API](/backend-go/README.md)** - Go API, endpoints, database
+
+## 📱 Testing
+
+### Web (Phone Browser)
+```bash
+cd web && npm run dev
+# On phone: http://YOUR_IP:5173
+```
+
+### Mobile (Expo)
+```bash
+cd mobile && npm start
+# Press 'w' for web, or scan QR for native
 ```
 
 ### Backend
 ```bash
-cd backend
-cp .env.example .env   # fill in your values
-npm install
-npm run dev
+curl http://localhost:8080/api/restaurants
 ```
 
-## Screens (implemented)
-- **HomeScreen** — banners, category filter, restaurant list with search
-- **RestaurantScreen** — hero image, stats, menu with add-to-cart
-- **CartScreen** — item quantities, bill breakdown, place order CTA
+## 🌍 Deployment
 
-## Next Steps
-- [ ] Add Mongoose models (User, Restaurant, Order)
-- [ ] Wire up auth middleware (JWT)
-- [ ] Connect mobile to real backend API
-- [ ] Add order tracking screen
-- [ ] Payment gateway integration
-- [ ] Admin dashboard for restaurant owners
+### Web → Vercel ($0/month)
+Connect web/ folder to Vercel → Auto-deploys on push
+
+### Backend → Railway ($7/month)
+Connect repo to Railway with PostgreSQL → Auto-deploys
+
+### Mobile → EAS Build (Free-$99)
+```bash
+cd mobile && eas build --platform ios
+```
+
+## 💰 Cost (Monthly)
+
+| Service | Cost |
+|---------|------|
+| Web Hosting | $0 |
+| Admin Hosting | $0 |
+| Backend | $7 |
+| Database | $0 |
+| Storage | $1 |
+| **Total** | **$8-10/mo** |
+| iOS App (yearly) | $99 |
+
+## 🔐 Environment Variables
+
+### Backend (backend-go/.env)
+```
+DATABASE_URL=postgresql://user:pass@localhost:5432/hunto
+API_KEY=your-secret-key
+STORAGE_BUCKET=hunto-images
+CORS_ALLOWED_ORIGINS=http://localhost:5173,https://hunto.vercel.app
+```
+
+### Web (web/.env.local)
+```
+VITE_API_BASE_URL=http://localhost:8080
+VITE_GOOGLE_CLIENT_ID=your-client-id
+```
+
+### Mobile (mobile/.env)
+```
+EXPO_API_BASE_URL=http://localhost:8080
+```
+
+## 📊 Why This Architecture?
+
+| Choice | Benefit |
+|--------|---------|
+| **PWA First** | $0 cost, instant updates, instant testing |
+| **Shared Code** | DRY, components work on web & mobile |
+| **Expo** | Cloud builds, no local native tools needed |
+| **Go Backend** | Fast, efficient, great for APIs |
+
+---
+
+**Ready to launch?** Start with [Web App Guide](/web/README.md) 🚀
