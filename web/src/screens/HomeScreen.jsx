@@ -79,11 +79,6 @@ export function HomeScreen({ onSelectRestaurant, onSelectLocation }) {
             <div className="location-address">
               {selectedLocation?.addressLine || selectedLocation?.address || 'Select location'}
             </div>
-            {selectedLocation?.label && (
-              <div className="location-sublabel" style={{ fontSize: '12px', color: '#999', marginTop: '2px' }}>
-                {selectedLocation.label}
-              </div>
-            )}
           </div>
         </div>
         <button className="change-location-btn" onClick={() => onSelectLocation?.()}>
