@@ -47,20 +47,28 @@ export function MenuScreen({ restaurantId, onBack }) {
 
   const menuItems = restaurant.menuItems || restaurant.menu || [];
 
-  const handleAddItem = (item) => {
-    addItem({
-      id: item.id,
-      name: item.name,
-      price: item.price,
-      description: item.description,
-      image: item.image,
-      restaurantId: restaurant.id,
-      restaurantName: restaurant.name,
-    });
+  const handleAddItem = async (item) => {
+    try {
+      await addItem({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        description: item.description,
+        image: item.image,
+        restaurantId: restaurant.id,
+        restaurantName: restaurant.name,
+      });
+    } catch (error) {
+      console.error('Failed to add item:', error);
+    }
   };
 
-  const handleRemoveItem = (itemId) => {
-    removeItem(itemId);
+  const handleRemoveItem = async (itemId) => {
+    try {
+      await removeItem(itemId);
+    } catch (error) {
+      console.error('Failed to remove item:', error);
+    }
   };
 
   return (
