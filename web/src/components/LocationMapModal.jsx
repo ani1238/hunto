@@ -82,6 +82,7 @@ export function LocationMapModal({ isOpen, onClose, onSelectLocation }) {
             zoom={13}
             style={{ height: '100%', width: '100%' }}
             ref={mapRef}
+            onClick={(e) => handleMapClick(e)}
           >
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
