@@ -29,7 +29,7 @@ export function LocationMapModal({ isOpen, onClose, onSelectLocation }) {
   });
 
   useEffect(() => {
-    if (isLoaded && searchInputRef.current && !autocompleteRef.current) {
+    if (isLoaded && searchInputRef.current) {
       try {
         console.log('Initializing Autocomplete...');
         autocompleteRef.current = new window.google.maps.places.Autocomplete(
@@ -46,7 +46,13 @@ export function LocationMapModal({ isOpen, onClose, onSelectLocation }) {
         console.error('Error initializing Autocomplete:', error);
       }
     }
-  }, [isLoaded]);
+    
+    return () => {
+      if (autocompleteRef.current) {
+        window.google?.maps?.event?.clearInstanceListeners(autocompleteRef.current);
+      }
+    };
+  }, [isLoaded, isOpen]);
 
   const handlePlaceSelect = () => {
     const place = autocompleteRef.current.getPlace();
@@ -64,6 +70,8 @@ export function LocationMapModal({ isOpen, onClose, onSelectLocation }) {
 
   useEffect(() => {
     if (isOpen) {
+      // Reset autocomplete ref when modal opens - this will force reinit
+      autocompleteRef.current = null;
       // Default: creating new location
       setIsNewLocation(true);
       setAddressLine1('');
