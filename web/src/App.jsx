@@ -20,8 +20,8 @@ function LoginScreen({ onLogin }) {
   };
 
   const handleVerifyOtp = async () => {
-    if (otp.length < 6) {
-      alert('Please enter 6-digit OTP');
+    if (otp.length < 4) {
+      alert('Please enter 4-digit OTP');
       return;
     }
     setLoading(true);
@@ -51,7 +51,7 @@ function LoginScreen({ onLogin }) {
                 disabled={loading}
               />
             </div>
-            <p className="help-text">We'll send you an OTP to verify your number</p>
+            <p className="help-text">We'll send you a 4-digit OTP to verify your number</p>
             <button
               className="btn btn-primary"
               onClick={handleSendOtp}
@@ -63,11 +63,11 @@ function LoginScreen({ onLogin }) {
         ) : (
           <div className="form-group">
             <label>Enter OTP</label>
-            <p className="otp-hint">6-digit code sent to +91{phone}</p>
+            <p className="otp-hint">4-digit code sent to +91{phone}</p>
             <input
               type="text"
-              placeholder="000000"
-              maxLength="6"
+              placeholder="0000"
+              maxLength="4"
               value={otp}
               onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
               className="otp-input"
@@ -76,7 +76,7 @@ function LoginScreen({ onLogin }) {
             <button
               className="btn btn-primary"
               onClick={handleVerifyOtp}
-              disabled={loading || otp.length < 6}
+              disabled={loading || otp.length < 4}
             >
               {loading ? 'Verifying...' : 'Verify OTP'}
             </button>

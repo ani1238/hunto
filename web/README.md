@@ -9,7 +9,7 @@ The app uses **OTP-based authentication** (no Google login needed):
 ```
 1. User enters phone number (+91XXXXXXXXXX)
    ↓
-2. Backend sends 6-digit OTP via SMS (Twilio)
+2. Backend sends 4-digit OTP via SMS (Twilio)
    ↓
 3. User enters OTP from SMS
    ↓
@@ -75,7 +75,7 @@ web/
 // POST /api/auth/verify-otp
 {
   "phone": "9876543210",
-  "otp": "123456"
+  "otp": "1234"
 }
 
 // Response
@@ -95,7 +95,7 @@ web/
 1. Start dev server: `npm run dev`
 2. Find your computer's IP: `ipconfig getifaddr en0` (macOS)
 3. On your phone, open: `http://YOUR_IP:5173`
-4. Test the OTP login flow
+4. Test the OTP login flow (enter any 10-digit phone number)
 
 ### Using ngrok for External Testing
 ```bash
