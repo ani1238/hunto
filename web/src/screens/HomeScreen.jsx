@@ -119,21 +119,32 @@ export function HomeScreen({ onSelectRestaurant, onSelectLocation }) {
               <p className="no-results">No restaurants available in your area</p>
             ) : (
               restaurants.map((restaurant) => (
-                <div key={restaurant.id} className="card">
-                  <div className="restaurant-header">
-                    <h3>{restaurant.name}</h3>
-                    <span className="rating-badge">★ {(restaurant.rating || 0).toFixed(1)}</span>
+                <div key={restaurant.id} className="card restaurant-card">
+                  {restaurant.image && (
+                    <div className="restaurant-image-container">
+                      <img 
+                        src={restaurant.image} 
+                        alt={restaurant.name}
+                        className="restaurant-image"
+                      />
+                    </div>
+                  )}
+                  <div className="restaurant-content">
+                    <div className="restaurant-header">
+                      <h3>{restaurant.name}</h3>
+                      <span className="rating-badge">★ {(restaurant.rating || 0).toFixed(1)}</span>
+                    </div>
+                    <p className="cuisine">{restaurant.tagline || 'Pet food delivery'}</p>
+                    <div className="restaurant-meta">
+                      <span>🚚 {restaurant.deliveryTime || 30} min</span>
+                    </div>
+                    <button
+                      onClick={() => onSelectRestaurant(restaurant.id)}
+                      className="view-btn"
+                    >
+                      View Menu →
+                    </button>
                   </div>
-                  <p className="cuisine">{restaurant.tagline || 'Pet food delivery'}</p>
-                  <div className="restaurant-meta">
-                    <span>🚚 {restaurant.deliveryTime || 30} min</span>
-                  </div>
-                  <button
-                    onClick={() => onSelectRestaurant(restaurant.id)}
-                    className="view-btn"
-                  >
-                    View Menu →
-                  </button>
                 </div>
               ))
             )}
