@@ -83,38 +83,6 @@ export function HomeScreen({ onSelectRestaurant, onSelectLocation }) {
         </button>
       </div>
 
-      {/* Show saved addresses as quick selectors */}
-      {locations.length > 1 && (
-        <div className="saved-locations-quick-select">
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px', fontWeight: '500' }}>
-            Other Locations
-          </div>
-          <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '8px' }}>
-            {locations.map((loc) => (
-              selectedLocation?.id !== loc.id && (
-                <button
-                  key={loc.id}
-                  className="location-quick-btn"
-                  onClick={() => setSelectedLocation(loc)}
-                  style={{
-                    flex: '0 0 auto',
-                    padding: '8px 12px',
-                    fontSize: '12px',
-                    backgroundColor: '#f5f5f5',
-                    border: '1px solid #ddd',
-                    borderRadius: '20px',
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {loc.label}
-                </button>
-              )
-            ))}
-          </div>
-        </div>
-      )}
-
       <div className="search-bar">
         <input
           type="text"
