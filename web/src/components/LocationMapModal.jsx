@@ -30,15 +30,22 @@ export function LocationMapModal({ isOpen, onClose, onSelectLocation }) {
 
   useEffect(() => {
     if (isLoaded && searchInputRef.current && !autocompleteRef.current) {
-      autocompleteRef.current = new window.google.maps.places.Autocomplete(
-        searchInputRef.current,
-        {
-          componentRestrictions: { country: 'in' },
-          types: ['geocode'],
-        }
-      );
+      try {
+        console.log('Initializing Autocomplete...');
+        autocompleteRef.current = new window.google.maps.places.Autocomplete(
+          searchInputRef.current,
+          {
+            componentRestrictions: { country: 'in' },
+            types: ['geocode'],
+            fields: ['formatted_address', 'geometry'],
+          }
+        );
 
-      autocompleteRef.current.addListener('place_changed', handlePlaceSelect);
+        autocompleteRef.current.addListener('place_changed', handlePlaceSelect);
+        console.log('Autocomplete initialized successfully');
+      } catch (error) {
+        console.error('Error initializing Autocomplete:', error);
+      }
     }
   }, [isLoaded]);
 

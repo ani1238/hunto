@@ -1037,7 +1037,7 @@ textarea.form-input {
   border-radius: 16px 16px 0 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .location-modal-map .modal-header {
