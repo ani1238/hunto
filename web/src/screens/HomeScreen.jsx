@@ -97,32 +97,49 @@ export function HomeScreen({ onSelectRestaurant, onSelectLocation }) {
       </div>
 
       <h2>Restaurants</h2>
-      {errorMessage && <p className="error-text error-message">{errorMessage}</p>}
-      {isLoading && <p className="loading-text">Loading restaurants...</p>}
-      <div className="restaurant-list">
-        {restaurants.length === 0 && !isLoading ? (
-          <p className="no-results">No restaurants available</p>
-        ) : (
-          restaurants.map((restaurant) => (
-            <div key={restaurant.id} className="card">
-              <div className="restaurant-header">
-                <h3>{restaurant.name}</h3>
-                <span className="rating-badge">★ {(restaurant.rating || 0).toFixed(1)}</span>
-              </div>
-              <p className="cuisine">{restaurant.tagline || 'Pet food delivery'}</p>
-              <div className="restaurant-meta">
-                <span>🚚 {restaurant.deliveryTime || 30} min</span>
-              </div>
-              <button
-                onClick={() => onSelectRestaurant(restaurant.id)}
-                className="view-btn"
-              >
-                View Menu →
-              </button>
-            </div>
-          ))
-        )}
-      </div>
+      {!selectedLocation ? (
+        <div style={{ padding: '40px 16px', textAlign: 'center' }}>
+          <p style={{ fontSize: '16px', color: '#999', marginBottom: '12px' }}>
+            Please select a delivery location to see nearby restaurants
+          </p>
+          <button
+            onClick={() => onSelectLocation?.()}
+            className="btn btn-primary"
+            style={{ marginTop: '12px' }}
+          >
+            Select Location
+          </button>
+        </div>
+      ) : (
+        <>
+          {errorMessage && <p className="error-text error-message">{errorMessage}</p>}
+          {isLoading && <p className="loading-text">Loading restaurants...</p>}
+          <div className="restaurant-list">
+            {restaurants.length === 0 && !isLoading ? (
+              <p className="no-results">No restaurants available in your area</p>
+            ) : (
+              restaurants.map((restaurant) => (
+                <div key={restaurant.id} className="card">
+                  <div className="restaurant-header">
+                    <h3>{restaurant.name}</h3>
+                    <span className="rating-badge">★ {(restaurant.rating || 0).toFixed(1)}</span>
+                  </div>
+                  <p className="cuisine">{restaurant.tagline || 'Pet food delivery'}</p>
+                  <div className="restaurant-meta">
+                    <span>🚚 {restaurant.deliveryTime || 30} min</span>
+                  </div>
+                  <button
+                    onClick={() => onSelectRestaurant(restaurant.id)}
+                    className="view-btn"
+                  >
+                    View Menu →
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        </>
+      )}
 
       {cartCount > 0 && (
         <div className="cart-summary">
