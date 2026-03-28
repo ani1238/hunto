@@ -14,24 +14,19 @@ export function HomeScreen({ onSelectRestaurant, onSelectLocation }) {
   useEffect(() => {
     const initializeApp = async () => {
       // Fetch saved locations first
-      await fetchLocations();
+      const locations = await fetchLocations();
       
       // Try to auto-detect current location
       const currentLocation = await detectCurrentLocation();
+      let selectedLoc = null;
+
       if (currentLocation) {
         // Check if this location is already saved
-        const isSaved = await new Promise((resolve) => {
-          const checkLocations = async () => {
-            const locs = await fetchLocations();
-            const found = locs.some(
-              (loc) =>
-                Math.abs(loc.latitude - currentLocation.latitude) < 0.01 &&
-                Math.abs(loc.longitude - currentLocation.longitude) < 0.01
-            );
-            resolve(found);
-          };
-          checkLocations();
-        });
+        const isSaved = locations.some(
+          (loc) =>
+            Math.abs(loc.latitude - currentLocation.latitude) < 0.01 &&
+            Math.abs(loc.longitude - currentLocation.longitude) < 0.01
+        );
 
         // If not saved, save it as current location
         if (!isSaved) {
@@ -41,15 +36,17 @@ export function HomeScreen({ onSelectRestaurant, onSelectLocation }) {
             currentLocation.longitude,
             currentLocation.label
           );
-        } else {
-          // Set it as selected if it exists
-          setSelectedLocation(currentLocation);
         }
+        selectedLoc = currentLocation;
+      } else if (locations.length > 0) {
+        // Fallback to first saved location
+        selectedLoc = locations[0];
+        setSelectedLocation(selectedLoc);
       }
 
-      // Fetch restaurants with location filter
-      if (selectedLocation) {
-        fetchRestaurants('', selectedLocation.latitude, selectedLocation.longitude);
+      // Fetch restaurants with location filter (only after we have a location)
+      if (selectedLoc) {
+        fetchRestaurants('', selectedLoc.latitude, selectedLoc.longitude);
       } else {
         fetchRestaurants('');
       }
