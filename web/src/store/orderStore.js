@@ -12,11 +12,9 @@ export const useOrderStore = create((set, get) => ({
     try {
       const response = await apiRequest('/api/orders', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        data: { 
           deliveryLocationId: Number(deliveryLocationId),
-          // If backend needs items in order, include them here
-        }),
+        },
       });
 
       const order = response.data || response;
@@ -40,7 +38,6 @@ export const useOrderStore = create((set, get) => ({
     try {
       const response = await apiRequest(`/api/orders/${orderId}`, {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
       });
 
       const order = response.data || response;
@@ -62,7 +59,6 @@ export const useOrderStore = create((set, get) => ({
     try {
       const response = await apiRequest(`/api/orders/${orderId}/track`, {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
       });
 
       const tracking = response.data || response;
