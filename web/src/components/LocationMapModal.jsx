@@ -49,8 +49,12 @@ export function LocationMapModal({ isOpen, onClose, onSelectLocation }) {
         data.name ||
         `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
       setLocationLabel(address);
+      // Auto-populate addressLine1 with the reverse geocoded address
+      setAddressLine1(address);
     } catch (err) {
-      setLocationLabel(`${lat.toFixed(4)}, ${lng.toFixed(4)}`);
+      const fallback = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      setLocationLabel(fallback);
+      setAddressLine1(fallback);
     } finally {
       setIsLoadingAddress(false);
     }

@@ -19,7 +19,7 @@ export function LocationSelectorScreen({ onLocationSelected, onBack }) {
 
   useEffect(() => {
     fetchLocations();
-  }, []);
+  }, [fetchLocations]);
 
   const handleAddLocation = async () => {
     if (!address.trim()) {
@@ -79,7 +79,7 @@ export function LocationSelectorScreen({ onLocationSelected, onBack }) {
               onClick={() => handleSelectLocation(location)}
             >
               <div className="location-label">{location.label}</div>
-              <div className="location-address">{location.address}</div>
+              <div className="location-address">{location.addressLine}</div>
               {selectedLocation?.id === location.id && <div className="checkmark">✓</div>}
             </div>
           ))
