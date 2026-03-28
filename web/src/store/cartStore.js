@@ -45,11 +45,19 @@ export const useCartStore = create((set, get) => ({
     return get().items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   },
 
+  getTotalPrice: () => {
+    return get().items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  },
+
   getItemCount: () => {
     return get().items.reduce((sum, item) => sum + item.quantity, 0);
   },
 
   clear: () => {
+    set({ items: [], restaurantId: null });
+  },
+
+  clearCart: () => {
     set({ items: [], restaurantId: null });
   },
 
