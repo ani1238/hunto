@@ -65,6 +65,12 @@ export function LocationMapModal({ isOpen, onClose, onSelectLocation }) {
       setMarkerPosition(center);
       setLocationLabel(selectedLocation.address || '');
       setAddressLine1(selectedLocation.addressLine || '');
+    } else if (isOpen && !selectedLocation) {
+      // Fresh modal - clear fields
+      setAddressLine1('');
+      setLocationLabel('');
+      setMarkerPosition(defaultCenter);
+      setMapCenter(defaultCenter);
     }
   }, [isOpen, selectedLocation]);
 
@@ -214,7 +220,7 @@ export function LocationMapModal({ isOpen, onClose, onSelectLocation }) {
 
         <div className="location-input-section">
           <label htmlFor="addressLine1" style={{ display: 'block', fontSize: '12px', color: '#666', marginBottom: '4px' }}>
-            Address Line 1
+            Address Line 1 <span style={{ color: '#FF6B35' }}>*</span>
           </label>
           <input
             id="addressLine1"
@@ -223,6 +229,7 @@ export function LocationMapModal({ isOpen, onClose, onSelectLocation }) {
             value={addressLine1}
             onChange={(e) => setAddressLine1(e.target.value)}
             className="location-input"
+            required
           />
           <label htmlFor="locationLabel" style={{ display: 'block', fontSize: '12px', color: '#666', margin: '8px 0 4px' }}>
             Location Name (Optional)
