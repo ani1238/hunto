@@ -64,76 +64,81 @@ export function LocationSelectorScreen({ onLocationSelected, onBack }) {
         <h2>Select Delivery Location</h2>
       </div>
 
-      {errorMessage && <p className="error-text">{errorMessage}</p>}
+      <div className="location-content">
+        {errorMessage && <p className="error-text">{errorMessage}</p>}
 
-      {isLoading && <p className="loading-text">Loading locations...</p>}
+        {isLoading && <p className="loading-text">Loading locations...</p>}
 
-      <div className="locations-list">
-        {locations.length === 0 ? (
-          <p className="no-locations">No saved locations. Add one below.</p>
-        ) : (
-          locations.map((location) => (
-            <div
-              key={location.id}
-              className={`location-card ${selectedLocation?.id === location.id ? 'selected' : ''}`}
-              onClick={() => handleSelectLocation(location)}
-            >
-              <div className="location-label">{location.label}</div>
-              <div className="location-address">{location.addressLine}</div>
-              {selectedLocation?.id === location.id && <div className="checkmark">✓</div>}
-            </div>
-          ))
-        )}
+        <div className="locations-list">
+          {locations.length === 0 ? (
+            <p className="no-locations">No saved locations. Add one below.</p>
+          ) : (
+            locations.map((location) => (
+              <div
+                key={location.id}
+                className={`location-card ${selectedLocation?.id === location.id ? 'selected' : ''}`}
+                onClick={() => handleSelectLocation(location)}
+                style={{ position: 'relative' }}
+              >
+                <div className="location-label">{location.label}</div>
+                <div className="location-address">{location.addressLine}</div>
+                {selectedLocation?.id === location.id && <div className="checkmark">✓</div>}
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
-      {showAddForm ? (
-        <div className="add-location-form">
-          <h3>Add New Location</h3>
-          <div className="form-group">
-            <label>Label (e.g., Home, Office)</label>
-            <input
-              type="text"
-              placeholder="Home"
-              value={label}
-              onChange={(e) => setLabel(e.target.value)}
-              className="form-input"
-            />
-          </div>
+      <div className="location-buttons-container">
+        {showAddForm ? (
+          <div className="add-location-form">
+            <h3>Add New Location</h3>
+            <div className="form-group">
+              <label>Label (e.g., Home, Office)</label>
+              <input
+                type="text"
+                placeholder="Home"
+                value={label}
+                onChange={(e) => setLabel(e.target.value)}
+                className="form-input"
+              />
+            </div>
 
-          <div className="form-group">
-            <label>Address</label>
-            <textarea
-              placeholder="Enter full delivery address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className="form-input"
-              rows="3"
-            />
-          </div>
+            <div className="form-group">
+              <label>Address</label>
+              <textarea
+                placeholder="Enter full delivery address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                className="form-input"
+                rows="3"
+              />
+            </div>
 
-          <div className="form-buttons">
-            <button
-              className="btn btn-primary"
-              onClick={handleAddLocation}
-              disabled={isLoading || !address.trim()}
-            >
-              {isLoading ? 'Saving...' : 'Save Location'}
+            <div className="form-buttons">
+              <button
+                className="btn btn-primary"
+                onClick={handleAddLocation}
+                disabled={isLoading || !address.trim()}
+              >
+                {isLoading ? 'Saving...' : 'Save Location'}
+              </button>
+              <button className="btn btn-secondary" onClick={() => setShowAddForm(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="add-location-options">
+            <button className="btn btn-primary add-btn" onClick={() => setShowAddForm(true)}>
+              + Add Address Manually
             </button>
-            <button className="btn btn-secondary" onClick={() => setShowAddForm(false)}>
-              Cancel
+            <button className="btn btn-secondary map-btn" onClick={() => setShowMapModal(true)}>
+              📍 Pick from Map
             </button>
           </div>
-        </div>
-      ) : (
-        <div className="add-location-options">
-          <button className="btn btn-primary add-btn" onClick={() => setShowAddForm(true)}>
-            + Add Address Manually
-          </button>
-          <button className="btn btn-secondary map-btn" onClick={() => setShowMapModal(true)}>
-            📍 Pick from Map
-          </button>
-        </div>
-      )}
+        )}
+      </div>
 
       <LocationMapModal
         isOpen={showMapModal}
