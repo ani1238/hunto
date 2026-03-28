@@ -3,7 +3,7 @@ import { useCartStore } from '../store/cartStore';
 import { useRestaurantStore } from '../store/restaurantStore';
 
 export function MenuScreen({ restaurantId, onBack }) {
-  const { addItem, getItemQuantity } = useCartStore();
+  const { addItem, items, removeItem } = useCartStore();
   const { getRestaurantById, errorMessage } = useRestaurantStore();
   const [restaurant, setRestaurant] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -17,6 +17,11 @@ export function MenuScreen({ restaurantId, onBack }) {
     };
     loadRestaurant();
   }, [restaurantId]);
+
+  const getItemQuantity = (itemId) => {
+    const item = items.find((i) => i.id === itemId);
+    return item?.quantity || 0;
+  };
 
   if (isLoading) {
     return (
@@ -55,8 +60,7 @@ export function MenuScreen({ restaurantId, onBack }) {
   };
 
   const handleRemoveItem = (itemId) => {
-    const cartStore = useCartStore.getState();
-    cartStore.removeItem(itemId);
+    removeItem(itemId);
   };
 
   return (
