@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { apiRequest } from '../api/authApi';
+import { reverseGeocode } from '../utils/geocoding';
 
 export const useLocationStore = create((set, get) => ({
   selectedLocation: null,
@@ -39,17 +40,19 @@ export const useLocationStore = create((set, get) => ({
   saveLocation: async (address, latitude, longitude, label = 'Home') => {
     set({ isLoading: true, errorMessage: '' });
     try {
-      // Parse simple address into components (or use defaults for map-based entries)
+      // Reverse geocode to get address components
+      const addressComponents = await reverseGeocode(latitude, longitude);
+
       const data = await apiRequest('/api/users/me/locations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         data: JSON.stringify({
           label,
-          addressLine: address,
-          city: 'Hyderabad', // Default for MVP
-          state: 'Telangana', // Default for MVP
-          postalCode: '500001', // Default for MVP
-          country: 'India', // Default for MVP
+          addressLine: addressComponents.addressLine,
+          city: addressComponents.city,
+          state: addressComponents.state,
+          postalCode: addressComponents.postalCode,
+          country: addressComponents.country,
           latitude,
           longitude,
           isCurrent: false,
