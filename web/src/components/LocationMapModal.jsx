@@ -36,6 +36,7 @@ export function LocationMapModal({ isOpen, onClose, onSelectLocation }) {
           searchInputRef.current,
           {
             componentRestrictions: { country: 'in' },
+            types: ['geocode', 'establishment'],
             fields: ['formatted_address', 'geometry', 'name', 'place_id'],
           }
         );
