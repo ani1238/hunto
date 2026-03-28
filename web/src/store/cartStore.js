@@ -23,6 +23,7 @@ export const useCartStore = create((set, get) => ({
   addItem: async (item) => {
     set({ isLoading: true, errorMessage: '' });
     try {
+      console.log('[CartStore] Adding item:', item.id);
       const response = await apiRequest('/api/cart/items', {
         method: 'POST',
         data: {
@@ -31,13 +32,21 @@ export const useCartStore = create((set, get) => ({
         },
       });
 
+      console.log('[CartStore] API Response:', response);
       const backendCart = response.data || response;
+      console.log('[CartStore] Backend cart items:', backendCart.items);
+      
+      const normalized = normalizeCartItems(backendCart.items || []);
+      console.log('[CartStore] Normalized items:', normalized);
+      
       set({
-        items: normalizeCartItems(backendCart.items || []),
+        items: normalized,
         restaurantId: backendCart.restaurantId,
         isLoading: false,
       });
+      console.log('[CartStore] State updated, new items:', get().items);
     } catch (error) {
+      console.error('[CartStore] Add item error:', error);
       set({
         isLoading: false,
         errorMessage: error.message || 'Failed to add item',
@@ -120,7 +129,10 @@ export const useCartStore = create((set, get) => ({
   },
 
   getItemQuantity: (itemId) => {
-    const item = get().items.find((i) => i.id === itemId);
+    const allItems = get().items;
+    console.log(`[CartStore] getItemQuantity(${itemId}) - searching in items:`, allItems.map(i => ({ id: i.id, menuItemId: i.menuItemId })));
+    const item = allItems.find((i) => i.id === itemId);
+    console.log(`[CartStore] Found item:`, item, 'Quantity:', item?.quantity || 0);
     return item?.quantity || 0;
   },
 

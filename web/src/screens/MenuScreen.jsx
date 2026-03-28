@@ -58,6 +58,10 @@ export function MenuScreen({ restaurantId, onBack }) {
 
   const menuItems = restaurant.menuItems || restaurant.menu || [];
 
+  // Check if viewing different restaurant than cart items
+  const cartRestaurantId = items.length > 0 ? items[0].restaurantId : null;
+  const isDifferentRestaurant = cartRestaurantId && Number(restaurant.id) !== cartRestaurantId;
+
   return (
     <div className="screen menu-screen">
       {/* Back Button */}
@@ -106,12 +110,19 @@ export function MenuScreen({ restaurantId, onBack }) {
       {/* Menu Items */}
       <div className="menu-section">
         <h2>Menu</h2>
+        {isDifferentRestaurant && (
+          <div style={{ backgroundColor: '#fff3cd', padding: '12px', borderRadius: '4px', marginBottom: '16px', color: '#856404' }}>
+            ⚠️ Your cart has items from another restaurant. Clear cart to add from this restaurant.
+          </div>
+        )}
         <div className="menu-items-grid">
           {menuItems.length === 0 ? (
             <p className="no-results">No items available</p>
           ) : (
             menuItems.map((item) => {
+              console.log(`[MenuScreen] Rendering item ${item.id}:`, item.name);
               const quantity = getItemQuantity(item.id);
+              console.log(`[MenuScreen] Item ${item.id} quantity:`, quantity);
               return (
                 <div key={item.id} className="menu-item-card">
                   {/* Item Info - Left Side */}
