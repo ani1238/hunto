@@ -9,8 +9,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Hunto" />
     <link rel="manifest" href="/manifest.json" />
-    <link rel="icon" href="/icon.png" />
-    <link rel="apple-touch-icon" href="/icon.png" />
     <title>Hunto - Pet Food Delivery</title>
     <style>
       body, html {
@@ -26,11 +24,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/index.jsx"></script>
-    <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js').catch(() => {});
-      }
-    </script>
+    <script type="module" src="./src/index.jsx"></script>
   </body>
 </html>
