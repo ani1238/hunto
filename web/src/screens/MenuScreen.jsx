@@ -119,43 +119,44 @@ export function MenuScreen({ restaurantId, onBack }) {
               const quantity = getItemQuantity(item.id);
               return (
                 <div key={item.id} className="menu-item-card">
-                  {/* Item Image */}
-                  {item.image ? (
-                    <img src={item.image} alt={item.name} className="menu-item-image" />
-                  ) : (
-                    <div className="menu-item-image-fallback">
-                      🍽️
-                    </div>
-                  )}
-
-                  {/* Item Info */}
-                  <div className="menu-item-info">
+                  {/* Item Info - Left Side */}
+                  <div className="menu-item-left">
                     {item.isBestseller && <span className="bestseller-badge">🏆 Bestseller</span>}
                     <h3>{item.name}</h3>
                     <p className="item-description">{item.description}</p>
                     <p className="item-price">₹{item.price}</p>
                   </div>
 
-                  {/* Add Button */}
-                  <div className="menu-item-action">
+                  {/* Image & Action - Right Side */}
+                  <div className="menu-item-right">
+                    {/* Item Image */}
+                    {item.image ? (
+                      <img src={item.image} alt={item.name} className="menu-item-image-small" />
+                    ) : (
+                      <div className="menu-item-image-fallback-small">
+                        🍽️
+                      </div>
+                    )}
+
+                    {/* Add Button */}
                     {quantity === 0 ? (
                       <button
-                        className="menu-add-btn"
+                        className="menu-add-btn-small"
                         onClick={() => handleAddItem(item)}
                       >
                         ADD
                       </button>
                     ) : (
-                      <div className="menu-quantity-control">
+                      <div className="menu-quantity-control-small">
                         <button
-                          className="menu-qty-btn"
+                          className="menu-qty-btn-small"
                           onClick={() => handleRemoveItem(item.id)}
                         >
                           −
                         </button>
-                        <span className="menu-qty-text">{quantity}</span>
+                        <span className="menu-qty-text-small">{quantity}</span>
                         <button
-                          className="menu-qty-btn"
+                          className="menu-qty-btn-small"
                           onClick={() => handleAddItem(item)}
                         >
                           +

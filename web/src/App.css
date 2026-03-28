@@ -563,121 +563,140 @@ html, body {
 
 .menu-item-card {
   background: white;
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.menu-item-image {
-  width: 100%;
-  height: 160px;
+.menu-item-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.menu-item-left h3 {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 2px 0;
+  color: #333;
+}
+
+.menu-item-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 100px;
+}
+
+.menu-item-image-small {
+  width: 80px;
+  height: 80px;
   object-fit: cover;
   background: #f0f0f0;
+  border-radius: 6px;
 }
 
-.menu-item-image-fallback {
-  width: 100%;
-  height: 160px;
+.menu-item-image-fallback-small {
+  width: 80px;
+  height: 80px;
   background: #f0f0f0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 48px;
+  font-size: 32px;
   color: #ddd;
-}
-
-.menu-item-info {
-  padding: 12px 14px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+  border-radius: 6px;
 }
 
 .bestseller-badge {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   color: #FF9800;
-  margin-bottom: 4px;
-}
-
-.menu-item-info h3 {
-  font-size: 16px;
-  font-weight: 700;
-  margin: 0 0 4px 0;
-  color: #333;
+  margin-bottom: 2px;
 }
 
 .item-description {
-  font-size: 12px;
+  font-size: 11px;
   color: #999;
-  margin: 0 0 6px 0;
-  line-height: 1.4;
+  margin: 0 0 4px 0;
+  line-height: 1.3;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
 .item-price {
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 700;
   color: #333;
   margin: 0;
 }
 
-.menu-item-action {
-  padding: 0 14px 12px 14px;
-}
-
-.menu-add-btn {
+.menu-add-btn-small {
   width: 100%;
-  padding: 10px;
+  padding: 6px 8px;
   background: white;
-  border: 2px solid #FF6B35;
-  border-radius: 8px;
-  font-size: 14px;
+  border: 1.5px solid #FF6B35;
+  border-radius: 6px;
+  font-size: 12px;
   font-weight: 700;
   color: #FF6B35;
   cursor: pointer;
   transition: all 0.2s;
 }
 
-.menu-add-btn:active {
+.menu-add-btn-small:active {
   background: #fff5f0;
 }
 
-.menu-quantity-control {
+.menu-quantity-control-small {
   display: flex;
   align-items: center;
   background: #FF6B35;
-  border-radius: 8px;
+  border-radius: 6px;
   overflow: hidden;
+  width: 100%;
 }
 
-.menu-qty-btn {
+.menu-qty-btn-small {
   flex: 1;
-  padding: 8px;
+  padding: 4px;
   background: #FF6B35;
   border: none;
   color: white;
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
 }
 
-.menu-qty-btn:active {
+.menu-qty-btn-small:active {
   background: #E55100;
 }
 
-.menu-qty-text {
+.menu-qty-text-small {
   flex: 1;
   text-align: center;
   color: white;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 13px;
 }
+
+.add-btn {
+  background-color: #FF6B35;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
