@@ -1,6 +1,19 @@
 import { create } from 'zustand';
 import { apiRequest } from '../api/authApi';
 
+const normalizeCartItems = (items = []) => {
+  return items.map((item) => ({
+    id: Number(item.menuItemId || item.id),
+    menuItemId: Number(item.menuItemId || item.id),
+    name: item.menuItemName,
+    price: item.unitPrice,
+    quantity: item.quantity,
+    restaurantId: Number(item.restaurantId),
+    restaurantName: item.restaurantName,
+    lineTotal: item.lineTotal,
+  }));
+};
+
 export const useCartStore = create((set, get) => ({
   items: [],
   restaurantId: null,
@@ -20,7 +33,7 @@ export const useCartStore = create((set, get) => ({
 
       const backendCart = response.data || response;
       set({
-        items: backendCart.items || [],
+        items: normalizeCartItems(backendCart.items || []),
         restaurantId: backendCart.restaurantId,
         isLoading: false,
       });
@@ -53,7 +66,7 @@ export const useCartStore = create((set, get) => ({
 
       const backendCart = response.data || response;
       set({
-        items: backendCart.items || [],
+        items: normalizeCartItems(backendCart.items || []),
         restaurantId: backendCart.restaurantId,
         isLoading: false,
       });
@@ -82,7 +95,7 @@ export const useCartStore = create((set, get) => ({
 
       const backendCart = response.data || response;
       set({
-        items: backendCart.items || [],
+        items: normalizeCartItems(backendCart.items || []),
         restaurantId: backendCart.restaurantId,
         isLoading: false,
       });
