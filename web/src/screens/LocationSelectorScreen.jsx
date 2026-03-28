@@ -46,7 +46,8 @@ export function LocationSelectorScreen({ onLocationSelected, onBack }) {
       locationData.address,
       locationData.latitude,
       locationData.longitude,
-      locationData.label
+      locationData.label,
+      locationData.addressLine
     );
     if (success) {
       setShowMapModal(false);

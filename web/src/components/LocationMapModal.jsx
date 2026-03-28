@@ -16,6 +16,7 @@ export function LocationMapModal({ isOpen, onClose, onSelectLocation }) {
   const { selectedLocation } = useLocationStore();
   const [markerPosition, setMarkerPosition] = useState(defaultCenter);
   const [locationLabel, setLocationLabel] = useState('');
+  const [addressLine1, setAddressLine1] = useState('');
   const [mapCenter, setMapCenter] = useState(defaultCenter);
   const [isLoadingAddress, setIsLoadingAddress] = useState(false);
 
@@ -32,6 +33,7 @@ export function LocationMapModal({ isOpen, onClose, onSelectLocation }) {
       setMapCenter(center);
       setMarkerPosition(center);
       setLocationLabel(selectedLocation.address || '');
+      setAddressLine1(selectedLocation.addressLine || '');
     }
   }, [isOpen, selectedLocation]);
 
@@ -78,6 +80,7 @@ export function LocationMapModal({ isOpen, onClose, onSelectLocation }) {
         latitude: markerPosition.lat,
         longitude: markerPosition.lng,
         address: locationLabel || `${markerPosition.lat.toFixed(4)}, ${markerPosition.lng.toFixed(4)}`,
+        addressLine: addressLine1 || (locationLabel || `${markerPosition.lat.toFixed(4)}, ${markerPosition.lng.toFixed(4)}`),
         label: locationLabel || 'Map Location',
         isCurrent: false,
       });
@@ -158,9 +161,24 @@ export function LocationMapModal({ isOpen, onClose, onSelectLocation }) {
         </div>
 
         <div className="location-input-section">
+          <label htmlFor="addressLine1" style={{ display: 'block', fontSize: '12px', color: '#666', marginBottom: '4px' }}>
+            Address Line 1
+          </label>
           <input
+            id="addressLine1"
             type="text"
-            placeholder="Enter location name or address"
+            placeholder="Enter your address (e.g., Apt/House No., Street)"
+            value={addressLine1}
+            onChange={(e) => setAddressLine1(e.target.value)}
+            className="location-input"
+          />
+          <label htmlFor="locationLabel" style={{ display: 'block', fontSize: '12px', color: '#666', margin: '8px 0 4px' }}>
+            Location Name (Optional)
+          </label>
+          <input
+            id="locationLabel"
+            type="text"
+            placeholder="e.g., Home, Office, Mom's Place"
             value={locationLabel}
             onChange={(e) => setLocationLabel(e.target.value)}
             className="location-input"

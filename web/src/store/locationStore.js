@@ -37,7 +37,7 @@ export const useLocationStore = create((set, get) => ({
     }
   },
 
-  saveLocation: async (address, latitude, longitude, label = 'Home') => {
+  saveLocation: async (address, latitude, longitude, label = 'Home', customAddressLine = null) => {
     set({ isLoading: true, errorMessage: '' });
     try {
       // Reverse geocode to get address components
@@ -48,7 +48,7 @@ export const useLocationStore = create((set, get) => ({
         headers: { 'Content-Type': 'application/json' },
         data: JSON.stringify({
           label,
-          addressLine: addressComponents.addressLine,
+          addressLine: customAddressLine || addressComponents.addressLine,
           city: addressComponents.city,
           state: addressComponents.state,
           postalCode: addressComponents.postalCode,

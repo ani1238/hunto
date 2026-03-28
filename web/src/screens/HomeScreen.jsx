@@ -7,7 +7,7 @@ import { useRestaurantStore } from '../store/restaurantStore';
 export function HomeScreen({ onSelectRestaurant, onSelectLocation }) {
   const { user, logout } = useAuthStore();
   const { getItemCount } = useCartStore();
-  const { selectedLocation, fetchLocations, detectCurrentLocation, saveLocation, setSelectedLocation } = useLocationStore();
+  const { selectedLocation, locations, fetchLocations, detectCurrentLocation, saveLocation, setSelectedLocation } = useLocationStore();
   const { restaurants, isLoading, errorMessage, fetchRestaurants } = useRestaurantStore();
   const cartCount = getItemCount();
 
@@ -69,14 +69,51 @@ export function HomeScreen({ onSelectRestaurant, onSelectLocation }) {
           <div className="location-info">
             <div className="location-label">Delivery To</div>
             <div className="location-address">
-              {selectedLocation?.address || 'Select location'}
+              {selectedLocation?.addressLine || selectedLocation?.address || 'Select location'}
             </div>
+            {selectedLocation?.label && (
+              <div className="location-sublabel" style={{ fontSize: '12px', color: '#999', marginTop: '2px' }}>
+                {selectedLocation.label}
+              </div>
+            )}
           </div>
         </div>
         <button className="change-location-btn" onClick={() => onSelectLocation?.()}>
           Change
         </button>
       </div>
+
+      {/* Show saved addresses as quick selectors */}
+      {locations.length > 1 && (
+        <div className="saved-locations-quick-select">
+          <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px', fontWeight: '500' }}>
+            Other Locations
+          </div>
+          <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '8px' }}>
+            {locations.map((loc) => (
+              selectedLocation?.id !== loc.id && (
+                <button
+                  key={loc.id}
+                  className="location-quick-btn"
+                  onClick={() => setSelectedLocation(loc)}
+                  style={{
+                    flex: '0 0 auto',
+                    padding: '8px 12px',
+                    fontSize: '12px',
+                    backgroundColor: '#f5f5f5',
+                    border: '1px solid #ddd',
+                    borderRadius: '20px',
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {loc.label}
+                </button>
+              )
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="search-bar">
         <input
