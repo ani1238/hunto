@@ -621,7 +621,8 @@ html, body {
   padding: 0;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
 }
 
 .location-header {
@@ -722,11 +723,16 @@ html, body {
 .location-buttons-container {
   flex-shrink: 0;
   padding: 16px;
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
   background: white;
   border-top: 1px solid #eee;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  position: sticky;
+  bottom: 0;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
 }
 
 .location-card.selected {
