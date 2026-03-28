@@ -18,8 +18,8 @@ export const useLocationStore = create((set, get) => ({
         headers: { 'Content-Type': 'application/json' },
       });
 
-      const locationsList = Array.isArray(data) ? data : data.locations || [];
-      const defaultLocation = locationsList.find((loc) => loc.isDefault) || locationsList[0];
+      const locationsList = Array.isArray(data) ? data : data.data || [];
+      const defaultLocation = locationsList.find((loc) => loc.isCurrent) || locationsList[0];
 
       set({
         locations: locationsList,
