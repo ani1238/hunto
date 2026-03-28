@@ -4,7 +4,7 @@ import { useAuthStore } from '../store/authStore';
 export function LoginScreen() {
   const [step, setStep] = useState('phone');
   const [phone, setPhone] = useState('');
-  const { otp: otpCode, requestOtp, verifyOtp, otpSent, isLoading, errorMessage, setOtpCode } = useAuthStore();
+  const { otpCode, requestOtp, verifyOtp, otpSent, isLoading, errorMessage, setOtpCode } = useAuthStore();
 
   const handleSendOtp = async () => {
     const success = await requestOtp(phone);
