@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useOrderStore } from '../store/orderStore';
 
 const ORDER_STATUSES = {
   placed: { label: 'Order Placed', icon: '📋', step: 1 },
@@ -10,50 +11,45 @@ const ORDER_STATUSES = {
 };
 
 export function OrderTrackingScreen({ orderId, onBack }) {
-  const [order, setOrder] = useState(null);
+  const { getOrderById, trackOrder, tracking, currentOrder } = useOrderStore();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [remainingTime, setRemainingTime] = useState('25-35 min');
 
   useEffect(() => {
     const loadOrder = async () => {
       setIsLoading(true);
       try {
-        // TODO: Replace with actual API call
-        // const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}`);
-        // const data = await response.json();
-        // setOrder(data.data);
-        
-        // Mock data for now
-        setOrder({
-          id: orderId,
-          status: 'preparing',
-          restaurantName: 'Pawsome Kitchen',
-          totalAmount: 447.00,
-          items: [
-            { name: 'Chicken & Rice Bowl', quantity: 1, price: 149 },
-            { name: 'Mutton Power Bowl', quantity: 2, price: 179 },
-          ],
-          deliveryAddress: '123 Main St, Apt 4B',
-          estimatedTime: '25-35 min',
-          timeline: [
-            { status: 'placed', timestamp: new Date(Date.now() - 600000) },
-            { status: 'confirmed', timestamp: new Date(Date.now() - 540000) },
-            { status: 'preparing', timestamp: new Date(Date.now() - 300000) },
-          ],
-        });
+        // Load order details
+        const order = await getOrderById(orderId);
+        if (!order) {
+          setError('Order not found');
+          setIsLoading(false);
+          return;
+        }
+
+        // Track order status
+        const trackResult = await trackOrder(orderId);
+        if (!trackResult.tracking) {
+          setError('Failed to load tracking info');
+        }
         setError('');
       } catch (err) {
-        setError('Failed to load order details');
+        setError('Failed to load order');
       } finally {
         setIsLoading(false);
       }
     };
 
     loadOrder();
+
     // Poll for updates every 10 seconds
-    const interval = setInterval(loadOrder, 10000);
+    const interval = setInterval(() => {
+      trackOrder(orderId);
+    }, 10000);
+
     return () => clearInterval(interval);
-  }, [orderId]);
+  }, [orderId, getOrderById, trackOrder]);
 
   if (isLoading) {
     return (
@@ -66,7 +62,7 @@ export function OrderTrackingScreen({ orderId, onBack }) {
     );
   }
 
-  if (error || !order) {
+  if (error || !currentOrder) {
     return (
       <div className="screen order-tracking-screen">
         <button onClick={onBack} className="back-btn">← Back</button>
@@ -77,10 +73,13 @@ export function OrderTrackingScreen({ orderId, onBack }) {
     );
   }
 
-  const currentStatusInfo = ORDER_STATUSES[order.status] || ORDER_STATUSES.placed;
+  const orderStatus = tracking?.status || currentOrder.status || 'placed';
+  const currentStatusInfo = ORDER_STATUSES[orderStatus] || ORDER_STATUSES.placed;
   const completedSteps = Object.values(ORDER_STATUSES)
     .filter((s) => s.step <= currentStatusInfo.step)
     .map((s) => s.label);
+
+  const timeline = tracking?.timeline || [];
 
   return (
     <div className="screen order-tracking-screen">
@@ -90,7 +89,7 @@ export function OrderTrackingScreen({ orderId, onBack }) {
       <div className="order-status">
         <div className="status-icon">{currentStatusInfo.icon}</div>
         <h2>{currentStatusInfo.label}</h2>
-        <p className="estimated-time">Estimated: {order.estimatedTime}</p>
+        <p className="estimated-time">Estimated: {currentOrder.estimatedDeliveryTime || remainingTime}</p>
       </div>
 
       {/* Timeline */}
@@ -108,32 +107,36 @@ export function OrderTrackingScreen({ orderId, onBack }) {
 
       {/* Order Details */}
       <div className="order-details">
-        <h3>Order #{order.id}</h3>
+        <h3>Order #{currentOrder.id}</h3>
 
         <div className="detail-section">
           <label>Restaurant</label>
-          <p>{order.restaurantName}</p>
+          <p>{currentOrder.restaurantName || 'Loading...'}</p>
         </div>
 
-        <div className="detail-section">
-          <label>Items</label>
-          {order.items.map((item, idx) => (
-            <div key={idx} className="order-item">
-              <span>{item.name}</span>
-              <span className="item-qty">×{item.quantity}</span>
-              <span className="item-price">₹{item.price}</span>
-            </div>
-          ))}
-        </div>
+        {currentOrder.items && currentOrder.items.length > 0 && (
+          <div className="detail-section">
+            <label>Items</label>
+            {currentOrder.items.map((item, idx) => (
+              <div key={idx} className="order-item">
+                <span>{item.name || item.menuItemName}</span>
+                <span className="item-qty">×{item.quantity}</span>
+                <span className="item-price">₹{item.price}</span>
+              </div>
+            ))}
+          </div>
+        )}
 
-        <div className="detail-section">
-          <label>Delivery To</label>
-          <p>{order.deliveryAddress}</p>
-        </div>
+        {currentOrder.deliveryAddress && (
+          <div className="detail-section">
+            <label>Delivery To</label>
+            <p>{currentOrder.deliveryAddress}</p>
+          </div>
+        )}
 
         <div className="detail-section">
           <label>Total</label>
-          <p className="order-total">₹{order.totalAmount.toFixed(2)}</p>
+          <p className="order-total">₹{(currentOrder.totalAmount || currentOrder.totalPrice || 0).toFixed(2)}</p>
         </div>
       </div>
 

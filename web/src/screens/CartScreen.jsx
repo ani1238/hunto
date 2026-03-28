@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useCartStore } from '../store/cartStore';
 import { useLocationStore } from '../store/locationStore';
+import { useOrderStore } from '../store/orderStore';
 
 export function CartScreen({ onBack, onCheckout }) {
   const { items, getTotalPrice, updateQuantity, removeItem, clearCart } = useCartStore();
   const { selectedLocation } = useLocationStore();
+  const { createOrder } = useOrderStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -31,19 +33,19 @@ export function CartScreen({ onBack, onCheckout }) {
     setError('');
 
     try {
-      // TODO: Replace with actual API call to create order
-      // const response = await fetch(`${API_BASE_URL}/api/orders`, {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ items, location: selectedLocation })
-      // });
-      // const data = await response.json();
-      // onCheckout?.(data.data.id);
+      // Get location ID - use addressLine as unique identifier if no ID available
+      const locationId = selectedLocation.id || selectedLocation.addressLine;
       
-      // Mock: Use current timestamp as order ID
-      const mockOrderId = Math.floor(Date.now() / 1000).toString();
-      onCheckout?.(mockOrderId);
-      clearCart();
+      // Create order via API
+      const result = await createOrder(locationId, items);
+      
+      if (result.success && result.order?.id) {
+        // Clear cart and navigate to tracking
+        clearCart();
+        onCheckout?.(result.order.id);
+      } else {
+        setError(result.error || 'Failed to place order');
+      }
     } catch (err) {
       setError('Failed to place order. Please try again.');
     } finally {
